@@ -1,1 +1,2 @@
-# Arcade-Tank-Game
+# Arcade Tank Game (Аркадная танковая игра)
+Игра про танки сделаная на python.
