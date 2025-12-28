@@ -18,7 +18,7 @@ class MenuView(arcade.View):
 
         self.box_layout = UIBoxLayout(vertical=True, space_between=10)
 
-        # self.setup_widgets()
+        self.setup_widgets()
 
         self.anchor_layout.add(self.box_layout, anchor_x="center", anchor_y="center")
         self.manager.add(self.anchor_layout)
@@ -29,10 +29,29 @@ class MenuView(arcade.View):
         # self.space_text = arcade.Text("Нажми SPACE, чтобы начать!", self.window.width / 2, self.window.height / 2 - 150,
         #                             arcade.color.WHITE, font_size=20, anchor_x="center", batch=self.batch)
 
+    def setup_widgets(self):
+        texture_normal = arcade.load_texture(":resources:/gui_basic_assets/button/red_normal.png")
+        texture_hovered = arcade.load_texture(":resources:/gui_basic_assets/button/red_hover.png")
+        texture_pressed = arcade.load_texture(":resources:/gui_basic_assets/button/red_press.png")
+
+        # если нажать заработает метод start_game_click
+        start_game_button = UITextureButton(text='Начать игру',
+                                            texture=texture_normal,
+                                            texture_hovered=texture_hovered,
+                                            texture_pressed=texture_pressed,
+                                            scale=1.0)
+        start_game_button.on_click = self.start_game_click
+        self.box_layout.add(start_game_button)
+
+    # запускает игру
+    def start_game_click(self, event):
+        # надо к main подключить
+        pass
+
     def on_draw(self):
         self.clear()
         self.batch.draw()
-        # self.manager.draw()
+        self.manager.draw()
 
 
 window = arcade.Window(800, 600, "")
