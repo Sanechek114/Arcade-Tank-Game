@@ -37,7 +37,8 @@ class MenuView(arcade.View):
                                             texture=texture_normal,
                                             texture_hovered=texture_hovered,
                                             texture_pressed=texture_pressed,
-                                            scale=1.0)
+                                            scale=1.0,
+                                            )
         start_game_button.on_click = self.start_game_click
         self.box_layout.add(start_game_button)
 
@@ -46,7 +47,8 @@ class MenuView(arcade.View):
                                          texture=texture_normal,
                                          texture_hovered=texture_hovered,
                                          texture_pressed=texture_pressed,
-                                         scale=1.0)
+                                         scale=1.0,
+                                         )
         records_button.on_click = self.records_click
         self.box_layout.add(records_button)
 
@@ -55,7 +57,8 @@ class MenuView(arcade.View):
                                       texture=texture_normal,
                                       texture_hovered=texture_hovered,
                                       texture_pressed=texture_pressed,
-                                      scale=1.0)
+                                      scale=1.0,
+                                      )
         exit_button.on_click = self.exit_click
         self.box_layout.add(exit_button)
 
@@ -69,7 +72,7 @@ class MenuView(arcade.View):
         arcade.exit()
 
     # сохраненные рекорды игрока
-    def records_click(self):
+    def records_click(self, event):
         # подключить к БД
         pass
 
