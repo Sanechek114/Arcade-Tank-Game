@@ -43,7 +43,16 @@ class MenuView(arcade.View):
         start_game_button.on_click = self.start_game_click
         self.box_layout.add(start_game_button)
 
-        # сли нажать заработает метод exit_click
+        # если нажать заработает метод records_click
+        records_button = UITextureButton(text='Рекорды',
+                                         texture=texture_normal,
+                                         texture_hovered=texture_hovered,
+                                         texture_pressed=texture_pressed,
+                                         scale=1.0)
+        records_button.on_click = self.records_click
+        self.box_layout.add(records_button)
+
+        # если нажать заработает метод exit_click
         exit_button = UITextureButton(text='Выход',
                                       texture=texture_normal,
                                       texture_hovered=texture_hovered,
@@ -60,6 +69,11 @@ class MenuView(arcade.View):
     # выходит с игры
     def exit_click(self, event):
         arcade.exit()
+
+    # сохраненные рекорды игрока
+    def records_click(self):
+        # подключить к БД
+        pass
 
     def on_draw(self):
         self.clear()
