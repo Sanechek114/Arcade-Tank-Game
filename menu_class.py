@@ -43,10 +43,23 @@ class MenuView(arcade.View):
         start_game_button.on_click = self.start_game_click
         self.box_layout.add(start_game_button)
 
+        # сли нажать заработает метод exit_click
+        exit_button = UITextureButton(text='Выход',
+                                      texture=texture_normal,
+                                      texture_hovered=texture_hovered,
+                                      texture_pressed=texture_pressed,
+                                      scale=1.0)
+        exit_button.on_click = self.exit_click
+        self.box_layout.add(exit_button)
+
     # запускает игру
     def start_game_click(self, event):
         # надо к main подключить
         pass
+
+    # выходит с игры
+    def exit_click(self, event):
+        arcade.exit()
 
     def on_draw(self):
         self.clear()
