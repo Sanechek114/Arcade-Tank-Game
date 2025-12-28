@@ -4,8 +4,6 @@ from arcade.gui import UITextureButton, UIManager, UIAnchorLayout, UIBoxLayout
 from pyglet.graphics import Batch
 
 
-# from main import GameView
-
 class MenuView(arcade.View):
     def __init__(self):
         super().__init__()
@@ -24,7 +22,7 @@ class MenuView(arcade.View):
         self.manager.add(self.anchor_layout)
 
         self.batch = Batch()
-        self.main_text = arcade.Text("Arcade Tank", self.window.width / 2, self.window.height / 2 + 100,
+        self.main_text = arcade.Text("Arcade Tank", self.window.width / 2, self.window.height / 2 + 200,
                                      arcade.color.WHITE, font_size=40, anchor_x="center", batch=self.batch)
         # self.space_text = arcade.Text("Нажми SPACE, чтобы начать!", self.window.width / 2, self.window.height / 2 - 150,
         #                             arcade.color.WHITE, font_size=20, anchor_x="center", batch=self.batch)
@@ -81,7 +79,7 @@ class MenuView(arcade.View):
         self.manager.draw()
 
 
-window = arcade.Window(800, 600, "")
+window = arcade.Window(960, 960, "")
 menu_view = MenuView()
 window.show_view(menu_view)
 arcade.run()
