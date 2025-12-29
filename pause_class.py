@@ -9,6 +9,8 @@ from pyglet.graphics import Batch
 """
 
 
+# from menu_class import MenuView
+
 class PauseView(arcade.View):
     def __init__(self, game_view):
         super().__init__()
@@ -48,10 +50,19 @@ class PauseView(arcade.View):
         continue_game_button.on_click = self.continue_game_click
         self.box_layout.add(continue_game_button)
 
+        main_menu_button = UITextureButton(text='Выйти в главное меню',
+                                           texture=texture_normal,
+                                           texture_hovered=texture_hovered,
+                                           texture_pressed=texture_pressed,
+                                           scale=1.0)
+        main_menu_button.on_click = self.main_menu_button_click
+        self.box_layout.add(main_menu_button)
+
     def on_draw(self):
         self.game_view.on_draw()
 
         self.batch.draw()
+
         self.manager.draw()
 
     def on_key_press(self, key, modifiers):
@@ -60,6 +71,11 @@ class PauseView(arcade.View):
 
     def continue_game_click(self, event):
         self.window.show_view(self.game_view)
+
+    def main_menu_button_click(self, event):
+        # menu_view = MenuView()  # Создаём игровой вид
+        # self.window.show_view(menu_view)
+        pass
 
 
 class MyGUIWindow(arcade.Window):
