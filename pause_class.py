@@ -36,7 +36,6 @@ class PauseView(arcade.View):
         self.manager.disable()
 
     def setup_widgets(self):
-        """ Добавляет кнопки в меню паузы. """
         texture_normal = arcade.load_texture(":resources:/gui_basic_assets/button/red_normal.png")
         texture_hovered = arcade.load_texture(":resources:/gui_basic_assets/button/red_hover.png")
         texture_pressed = arcade.load_texture(":resources:/gui_basic_assets/button/red_press.png")
@@ -46,7 +45,7 @@ class PauseView(arcade.View):
                                                texture_hovered=texture_hovered,
                                                texture_pressed=texture_pressed,
                                                scale=1.0)
-        continue_game_button.on_click = self.on_continue_game_click
+        continue_game_button.on_click = self.continue_game_click
         self.box_layout.add(continue_game_button)
 
     def on_draw(self):
@@ -57,9 +56,9 @@ class PauseView(arcade.View):
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.ESCAPE:
-            self.on_continue_game_click(None)
+            self.continue_game_click(None)
 
-    def on_continue_game_click(self, event):
+    def continue_game_click(self, event):
         self.window.show_view(self.game_view)
 
 
