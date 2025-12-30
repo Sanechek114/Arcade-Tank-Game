@@ -73,7 +73,7 @@ class PauseView(arcade.View):
         self.window.show_view(self.game_view)
 
     def main_menu_button_click(self, event):
-        # menu_view = MenuView()  # Создаём игровой вид
+        # menu_view = MenuView()
         # self.window.show_view(menu_view)
         pass
 
