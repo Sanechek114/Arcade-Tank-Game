@@ -89,16 +89,15 @@ class GameView(arcade.View):
         self.world_camera_update()
 
     def tank_shooting(self, delta_time):
-        self.reloudtimer = max(self.reloudtimer - 1 * delta_time, 0)
-        if self.fire:
-            self.fire = False
+        self.reloudtimer = max(self.reloudtimer - delta_time, 0)
+        if self.fire and self.reloudtimer == 0:
             self.reloudtimer = RELOUDTIME
             x, y = self.tank_turret.center_x, self.tank_turret.center_y
             angle = self.tank_turret.angle
-            Bx, By = (x + 10 * math.sin(math.radians(angle)),
-                      y + 10 * math.cos(math.radians(angle)))
-            newBullet = Bullet(x, y, angle)
-            newBullet.change_x, newBullet.change_y = (10 * math.sin(math.radians(angle - 90)),
+            Bx, By = (x + -10 * math.sin(math.radians(angle + 90)),
+                      y + -10 * math.cos(math.radians(angle + 90)))
+            newBullet = Bullet(Bx, By, angle)
+            newBullet.change_x, newBullet.change_y = (10 * math.sin(math.radians(angle - 90 + 360)),
                                                       10 * math.cos(math.radians(angle - 90)))
             self.bullets.append(newBullet)
             if len(self.bullets):
@@ -147,6 +146,9 @@ class GameView(arcade.View):
 
         self.tank_hull.position = (self.tank_hull.center_x + speedx, self.tank_hull.center_y + speedy)
 
+    def shoot_sound(self):
+        arcade.play_sound()
+
     def turret_update(self, delta_time):
         Wx, Wy = self.width // 2, self.height // 2
         Mx, My = self.mouseXY
@@ -163,7 +165,6 @@ class GameView(arcade.View):
         Tx = Hx - (-11 + 26) * SCALE * math.sin(math.radians((self.tank_turret.angle + 90) % 360))
         Ty = Hy - (-11 + 26) * SCALE * math.cos(math.radians((self.tank_turret.angle + 90) % 360))
         self.tank_turret.position = Tx, Ty
-
 
     def world_camera_update(self):
         position = (
@@ -200,9 +201,12 @@ class GameView(arcade.View):
         self.mouseXY = (x, y)
 
     def on_mouse_press(self, x, y, button, modifiers):
-        if button == arcade.MOUSE_BUTTON_LEFT and self.reloudtimer == 0:
+        if button == arcade.MOUSE_BUTTON_LEFT:
             self.fire = True
-            self.reloudtimer = RELOUDTIME
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        if button == arcade.MOUSE_BUTTON_LEFT:
+            self.fire = False
 
 
 window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, 'игра про танки')
