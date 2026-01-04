@@ -34,6 +34,8 @@ class Bullet(arcade.Sprite):
         super().__init__('assets/sprites/bullet.png', SCALE, center_x, center_y, angle)
         self.texture = self.texture.flip_horizontally()
         self.livetime = 0
+        self.change_x, self.change_y = (10 * math.sin(math.radians(angle - 90 + 360)),
+                                                      10 * math.cos(math.radians(angle - 90)))
 
     def on_update(self, delta_time):
         self.livetime += delta_time
@@ -67,6 +69,8 @@ class GameView(arcade.View):
         self.right = False
         self.fire = False
 
+        self.shoot_sound = arcade.load_sound("assets/sounds/shoot.mp3")
+
         self.tank_hull = Tank_hull()
         self.tank_turret = Tank_turret()
 
@@ -80,6 +84,7 @@ class GameView(arcade.View):
         self.scene.draw(pixelated=True)
         self.bullets.draw(pixelated=True)
         self.tank.draw(pixelated=True)
+        self.draw_reloding()
 
     def on_update(self, delta_time):
         self.tank_control(delta_time)
@@ -91,19 +96,27 @@ class GameView(arcade.View):
     def tank_shooting(self, delta_time):
         self.reloudtimer = max(self.reloudtimer - delta_time, 0)
         if self.fire and self.reloudtimer == 0:
+            self.shoot_sound.play(0.5)
             self.reloudtimer = RELOUDTIME
             x, y = self.tank_turret.center_x, self.tank_turret.center_y
             angle = self.tank_turret.angle
             Bx, By = (x + -10 * math.sin(math.radians(angle + 90)),
                       y + -10 * math.cos(math.radians(angle + 90)))
             newBullet = Bullet(Bx, By, angle)
-            newBullet.change_x, newBullet.change_y = (10 * math.sin(math.radians(angle - 90 + 360)),
-                                                      10 * math.cos(math.radians(angle - 90)))
             self.bullets.append(newBullet)
             if len(self.bullets):
                 for bullet in self.bullets:
                     if bullet.livetime > 5:
                         self.bullets.remove(bullet)
+    
+    def draw_reloding(self):
+        try:
+            dx = (RELOUDTIME - self.reloudtimer) / RELOUDTIME
+        except ZeroDivisionError:
+            dx = 0
+        x, y = self.world_camera.position
+        arcade.draw_lbwh_rectangle_filled(x - self.width * 0.15, y - self.height * 0.45, self.width * 0.3 * dx, SCALE * 4, arcade.color.GREEN)
+        arcade.draw_lbwh_rectangle_filled(x + self.width * 0.15, y - self.height * 0.45, -self.width * 0.3 * (1 - dx), SCALE * 4, arcade.color.RED)
 
     def tank_control(self, delta_time):
         if self.forward or self.backward:
@@ -119,7 +132,6 @@ class GameView(arcade.View):
                     self.tank_speed = max((self.tank_speed + self.tank_acceleration  * delta_time, 0))
                 else:
                     self.tank_acceleration = -ACCELERATION * 0.5 * (MAX_SPEED - abs(self.tank_speed)) * delta_time
-
             self.tank_speed += self.tank_acceleration * delta_time
 
         if not self.backward and not self.forward:
@@ -145,9 +157,6 @@ class GameView(arcade.View):
         speedy = self.tank_speed * math.cos(math.radians(self.tank_hull.angle + 270)) * delta_time
 
         self.tank_hull.position = (self.tank_hull.center_x + speedx, self.tank_hull.center_y + speedy)
-
-    def shoot_sound(self):
-        arcade.play_sound()
 
     def turret_update(self, delta_time):
         Wx, Wy = self.width // 2, self.height // 2
