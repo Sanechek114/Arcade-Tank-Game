@@ -1,6 +1,7 @@
 import arcade
 from config import SCALE, ANIMATION_SPEED
 
+
 class Explosion(arcade.Sprite):
     def __init__(self, x, y, exp_list):
         super().__init__(center_x=x, center_y=y, scale=SCALE, )
