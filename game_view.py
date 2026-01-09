@@ -4,12 +4,14 @@ from config import (SCALE, SCREEN_HEIGHT, SCREEN_WIDTH, RELOUDTIME,
                     CAMERA_LERP)
 from tank import Tank_hull, Tank_turret
 from explosion import Explosion
+from pause_class import PauseView
 
 
 class GameView(arcade.View):
-    def __init__(self):
+    def __init__(self, menu):
         super().__init__()
-        arcade.set_background_color(arcade.color.SKY_BLUE)
+        self.menu = menu
+        self.background_color = arcade.color.SKY_BLUE
         self.world_camera = arcade.camera.Camera2D()
         self.world_width = SCREEN_WIDTH
         self.world_height = SCREEN_HEIGHT
@@ -94,6 +96,9 @@ class GameView(arcade.View):
             self.left = True
         if key == arcade.key.D:
             self.right = True
+        if key == arcade.key.ESCAPE:
+            pause_view = PauseView(self, self.menu)
+            self.window.show_view(pause_view)
         if key == arcade.key.J:
             x, y = 0, 0
             self.explosions.append(Explosion(x, y, self.explosions))

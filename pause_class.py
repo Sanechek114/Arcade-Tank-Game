@@ -1,5 +1,6 @@
 import arcade
-from arcade.gui import UITextureButton, UIManager, UIAnchorLayout, UIBoxLayout
+from arcade.gui import (
+    UITextureButton, UIManager, UIAnchorLayout, UIBoxLayout, UILabel)
 from pyglet.graphics import Batch
 
 # это должно быть в key_press в GameView
@@ -9,17 +10,12 @@ from pyglet.graphics import Batch
 """
 
 
-# from menu_class import MenuView
-
 class PauseView(arcade.View):
-    def __init__(self, game_view):
+    def __init__(self, game_view, menu):
         super().__init__()
         self.game_view = game_view
+        self.menu = menu
         self.manager = UIManager()
-
-        self.batch = Batch()
-        self.pause_text = arcade.Text("ПАУЗА", self.window.width / 2, self.window.height / 2 + 100,
-                                      arcade.color.WHITE, font_size=60, anchor_x="center", batch=self.batch)
 
         self.anchor_layout = UIAnchorLayout()
         self.box_layout = UIBoxLayout(vertical=True, space_between=10)
@@ -32,7 +28,7 @@ class PauseView(arcade.View):
     def on_show_view(self):
         self.manager.enable()
 
-        arcade.set_background_color(arcade.color.BLACK)
+        self.background_color = arcade.color.BLACK
 
     def on_hide_view(self):
         self.manager.disable()
@@ -41,6 +37,13 @@ class PauseView(arcade.View):
         texture_normal = arcade.load_texture(":resources:/gui_basic_assets/button/red_normal.png")
         texture_hovered = arcade.load_texture(":resources:/gui_basic_assets/button/red_hover.png")
         texture_pressed = arcade.load_texture(":resources:/gui_basic_assets/button/red_press.png")
+
+        label = UILabel(text="ПАУЗА",
+                        font_size=60,
+                        text_color=arcade.color.WHITE,
+                        width=300,
+                        align="center")
+        self.box_layout.add(label)
 
         continue_game_button = UITextureButton(text='Продолжить игру',
                                                texture=texture_normal,
@@ -61,21 +64,35 @@ class PauseView(arcade.View):
     def on_draw(self):
         self.game_view.on_draw()
 
-        self.batch.draw()
-
         self.manager.draw()
 
     def on_key_press(self, key, modifiers):
+        if key == arcade.key.W:
+            self.game_view.forward = True
+        if key == arcade.key.S:
+            self.game_view.backward = True
+        if key == arcade.key.A:
+            self.game_view.left = True
+        if key == arcade.key.D:
+            self.game_view.right = True
         if key == arcade.key.ESCAPE:
             self.continue_game_click(None)
+
+    def on_key_release(self, key, modifiers):
+        if key == arcade.key.W:
+            self.game_view.forward = False
+        if key == arcade.key.S:
+            self.game_view.backward = False
+        if key == arcade.key.A:
+            self.game_view.left = False
+        if key == arcade.key.D:
+            self.game_view.right = False
 
     def continue_game_click(self, event):
         self.window.show_view(self.game_view)
 
     def main_menu_button_click(self, event):
-        # menu_view = MenuView()  # Создаём игровой вид
-        # self.window.show_view(menu_view)
-        pass
+        self.window.show_view(self.menu)
 
 
 class MyGUIWindow(arcade.Window):

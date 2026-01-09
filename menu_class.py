@@ -1,7 +1,6 @@
 import arcade
-from arcade.gui import UITextureButton, UIManager, UIAnchorLayout, UIBoxLayout
-
-from pyglet.graphics import Batch
+from arcade.gui import (UITextureButton, UIManager, UIAnchorLayout, UIBoxLayout, UILabel)
+from game_view import GameView
 
 
 class MenuView(arcade.View):
@@ -21,9 +20,6 @@ class MenuView(arcade.View):
         self.anchor_layout.add(self.box_layout, anchor_x="center", anchor_y="center")
         self.manager.add(self.anchor_layout)
 
-        self.batch = Batch()
-        self.main_text = arcade.Text("Arcade Tank", self.window.width / 2, self.window.height / 2 + 200,
-                                     arcade.color.WHITE, font_size=40, anchor_x="center", batch=self.batch)
         # self.space_text = arcade.Text("Нажми SPACE, чтобы начать!", self.window.width / 2, self.window.height / 2 - 150,
         #                             arcade.color.WHITE, font_size=20, anchor_x="center", batch=self.batch)
 
@@ -31,6 +27,13 @@ class MenuView(arcade.View):
         texture_normal = arcade.load_texture(":resources:/gui_basic_assets/button/red_normal.png")
         texture_hovered = arcade.load_texture(":resources:/gui_basic_assets/button/red_hover.png")
         texture_pressed = arcade.load_texture(":resources:/gui_basic_assets/button/red_press.png")
+
+        label = UILabel(text="Arcade Tank",
+                        font_size=60,
+                        text_color=arcade.color.WHITE,
+                        width=300,
+                        align="center")
+        self.box_layout.add(label)
 
         # если нажать заработает метод start_game_click
         start_game_button = UITextureButton(text='Начать игру',
@@ -64,8 +67,8 @@ class MenuView(arcade.View):
 
     # запускает игру
     def start_game_click(self, event):
-        # надо к main подключить
-        pass
+        self.game_view = GameView(self)
+        self.window.show_view(self.game_view)
 
     # выходит с игры
     def exit_click(self, event):
@@ -76,13 +79,10 @@ class MenuView(arcade.View):
         # подключить к БД
         pass
 
+    def on_key_press(self, symbol, modifiers):
+        if symbol == arcade.key.ESCAPE:
+            arcade.exit()
+
     def on_draw(self):
         self.clear()
-        self.batch.draw()
         self.manager.draw()
-
-
-window = arcade.Window(960, 960, "")
-menu_view = MenuView()
-window.show_view(menu_view)
-arcade.run()
