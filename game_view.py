@@ -82,11 +82,12 @@ class GameView(arcade.View):
             self.tank_hull, self.bullets)
         if bullets:
             for bullet in bullets:
-                self.tank_hull.lives -= 1
-                self.bullets.remove(bullet)
-                if self.tank_hull.lives == 0:
-                    self.explosions.append(
-                        Explosion(*self.tank_hull.position, self.explosions))
+                if not bullet.player:
+                    self.tank_hull.lives -= 1
+                    self.bullets.remove(bullet)
+                    if self.tank_hull.lives == 0:
+                        self.explosions.append(
+                            Explosion(*self.tank_hull.position, self.explosions))
 
 
     def draw_reloding_lives(self):

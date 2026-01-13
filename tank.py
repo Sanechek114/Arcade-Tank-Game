@@ -116,6 +116,6 @@ class Tank_turret(arcade.Sprite):
             angle = self.angle
             Bx, By = (x + -SCALE * 10 * math.sin(math.radians(angle + 90)),
                       y + -SCALE * 10 * math.cos(math.radians(angle + 90)))
-            newBullet = Bullet(Bx, By, angle, self.game_view.bullets)
+            newBullet = Bullet(Bx, By, angle, self.game_view.bullets, True)
             self.game_view.bullets.append(newBullet)
 
