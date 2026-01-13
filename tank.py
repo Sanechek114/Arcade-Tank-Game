@@ -1,8 +1,9 @@
 import arcade
-from config import (SCALE, BULLET_TIME, BULLET_SPEED,
+from config import (SCALE, BULLET_TIME, BULLET_SPEED, 
                     BRAKINGFORCE, MAX_SPEED, ACCELERATION,
                     HULLROTATIONSPEED, TURRETROTATIONSPEED, RELOUDTIME)
 import math
+from bullet_class import Bullet
 
 
 class Tank_hull(arcade.Sprite):
@@ -12,6 +13,7 @@ class Tank_hull(arcade.Sprite):
         self.game_view = game_view
         self.acceleration = 0
         self.speed = 0
+        self.lives = 3
 
     def update(self, delta_time):
         self.tank_control(delta_time)
@@ -36,7 +38,7 @@ class Tank_hull(arcade.Sprite):
                          self.acceleration * delta_time, 0))
                 else:
                     self.acceleration = -ACCELERATION * (
-                        (MAX_SPEED - abs(self.speed)) / MAX_SPEED)
+                        (MAX_SPEED / 2 - abs(self.speed)) / MAX_SPEED)
                     self.speed += self.acceleration * delta_time
 
         if not self.game_view.backward and not self.game_view.forward:
@@ -48,23 +50,28 @@ class Tank_hull(arcade.Sprite):
                 self.acceleration = BRAKINGFORCE
                 self.speed = min(
                     (self.speed + self.acceleration * delta_time, 0))
+        
+        turret_angle = self.game_view.tank_turret.angle
 
         if self.game_view.right and not self.game_view.left:
             if self.speed < 0:
                 self.angle = self.angle - HULLROTATIONSPEED * delta_time
+                self.game_view.tank_turret.angle = turret_angle - HULLROTATIONSPEED * delta_time
             else:
                 self.angle = self.angle + HULLROTATIONSPEED * delta_time
+                self.game_view.tank_turret.angle = turret_angle + HULLROTATIONSPEED * delta_time
         if not self.game_view.right and self.game_view.left:
             if self.speed < 0:
                 self.angle = self.angle + HULLROTATIONSPEED * delta_time
+                self.game_view.tank_turret.angle = turret_angle + HULLROTATIONSPEED * delta_time
             else:
                 self.angle = self.angle - HULLROTATIONSPEED * delta_time
+                self.game_view.tank_turret.angle = turret_angle - HULLROTATIONSPEED * delta_time
 
         speedx = self.speed * math.sin(
             math.radians(self.angle + 270)) * delta_time
         speedy = self.speed * math.cos(
             math.radians(self.angle + 270)) * delta_time
-        print(self.speed, self.acceleration)
 
         self.position = (self.center_x + speedx, self.center_y + speedy)
 
@@ -73,7 +80,7 @@ class Tank_turret(arcade.Sprite):
     def __init__(self, game_view):
         super().__init__(center_x=465 - 16 * 4, center_y=465, scale=SCALE)
         self.texture = arcade.load_texture('assets/sprites/tank_turret.png')
-        self.shoot_sound = arcade.load_sound("assets/sounds/awp.mp3")
+        self.shoot_sound = arcade.load_sound("assets/sounds/shoot.mp3")
         self.game_view = game_view
         self.reloudtimer = 0
 
@@ -112,21 +119,3 @@ class Tank_turret(arcade.Sprite):
             newBullet = Bullet(Bx, By, angle, self.game_view.bullets)
             self.game_view.bullets.append(newBullet)
 
-
-class Bullet(arcade.Sprite):
-    def __init__(self, center_x, center_y, angle, bul_list):
-        super().__init__(
-            'assets/sprites/bullet.png', SCALE, center_x, center_y, angle)
-        self.texture = self.texture.flip_horizontally()
-        self.bullet_timer = 0
-        self.change_x, self.change_y = (
-            BULLET_SPEED * math.sin(math.radians(angle - 90 + 360)),
-            BULLET_SPEED * math.cos(math.radians(angle - 90)))
-        self.bul_list = bul_list
-
-    def update(self, delta_time):
-        self.bullet_timer += delta_time
-        if self.bullet_timer > BULLET_TIME:
-            self.bul_list.remove(self)
-        self.position = (self.center_x + self.change_x * delta_time,
-                         self.center_y + self.change_y * delta_time)

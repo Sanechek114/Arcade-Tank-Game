@@ -5,6 +5,7 @@ from config import (SCALE, SCREEN_HEIGHT, SCREEN_WIDTH, RELOUDTIME,
 from tank import Tank_hull, Tank_turret
 from explosion import Explosion
 from pause_class import PauseView
+from enemy_class import Enemy
 
 
 class GameView(arcade.View):
@@ -40,6 +41,10 @@ class GameView(arcade.View):
         self.right = False
         self.fire = False
 
+        self.enemy = Enemy(self)
+        self.enemies = []
+        self.enemies.append(self.enemy)
+
         self.tank_hull = Tank_hull(self)
         self.tank_turret = Tank_turret(self)
 
@@ -47,23 +52,44 @@ class GameView(arcade.View):
         self.tank.append(self.tank_hull)
         self.tank.append(self.tank_turret)
 
+        self.enemies_hulls = arcade.SpriteList()
+        for enemy in self.enemies:
+            self.enemies_hulls.append(enemy.hull)
+
+        self.enemy_to_player_colis = arcade.PhysicsEngineSimple(
+            self.tank_hull, self.enemies_hulls)
+
     def on_draw(self):
         self.clear()
         self.world_camera.use()
         self.scene.draw(pixelated=True)
         self.bullets.draw(pixelated=True)
         self.tank.draw(pixelated=True)
+        for enemy in self.enemies:
+            enemy.draw(pixelated=True)
         self.explosions.draw(pixelated=True)
-        self.draw_reloding()
+        self.draw_reloding_lives()
 
     def on_update(self, delta_time):
         self.tank_hull.update(delta_time)
         self.tank_turret.update(delta_time)
+        self.enemy.update(delta_time)
+        self.enemy_to_player_colis.update()
         self.bullets.update(delta_time)
         self.explosions.update(delta_time)
         self.world_camera_update()
+        bullets = arcade.check_for_collision_with_list(
+            self.tank_hull, self.bullets)
+        if bullets:
+            for bullet in bullets:
+                self.tank_hull.lives -= 1
+                self.bullets.remove(bullet)
+                if self.tank_hull.lives == 0:
+                    self.explosions.append(
+                        Explosion(*self.tank_hull.position, self.explosions))
 
-    def draw_reloding(self):
+
+    def draw_reloding_lives(self):
         try:
             dx = (RELOUDTIME - self.tank_turret.reloudtimer) / RELOUDTIME
         except ZeroDivisionError:
@@ -75,6 +101,11 @@ class GameView(arcade.View):
         arcade.draw_lbwh_rectangle_filled(
             x + self.width * 0.15, y - self.height * 0.45,
             -self.width * 0.3 * (1 - dx), SCALE * 4, arcade.color.RED)
+        for n in range(self.tank_hull.lives):
+            arcade.draw_lbwh_rectangle_filled(
+                x - self.width * 0.14 + n * 0.1 * self.width,
+                y - self.height * 0.43,
+                self.width * 0.08, SCALE * 4, arcade.color.RED)
 
     def world_camera_update(self):
         position = (
