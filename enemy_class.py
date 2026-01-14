@@ -1,6 +1,5 @@
 import arcade
-from config import (SCALE, BULLET_TIME, BULLET_SPEED, ENEMY_VIEW,
-                    BRAKINGFORCE, MAX_SPEED, ACCELERATION,
+from config import (SCALE, ENEMY_VIEW, MAX_SPEED,
                     HULLROTATIONSPEED, TURRETROTATIONSPEED, RELOUDTIME)
 from bullet_class import Bullet
 import math
@@ -18,7 +17,7 @@ class Tank_hull(arcade.Sprite):
         self.game_view = game_view
         self.speed = MAX_SPEED / 3
         self.next_point()
-    
+
     def next_point(self):
         self.in_moving = False
         self.point_id = (self.point_id + 1 + len(self.route)) % len(self.route)
@@ -32,7 +31,8 @@ class Tank_hull(arcade.Sprite):
         print(self.target_angle)
 
     def update(self, delta_time):
-        if abs(self.position[0] - self.point[0]) < 2 and abs(self.position[1] - self.point[1]) < 2:
+        if abs(self.position[0] - self.point[0]) < 2 and abs(
+                self.position[1] - self.point[1]) < 2:
             self.next_point()
         if self.in_moving:
             self.position = (self.center_x + self.change_x,
@@ -80,7 +80,8 @@ class Tank_turret(arcade.Sprite):
         else:
             angle_to_player = hull.angle
         print(abs(self.angle - angle_to_player))
-        if abs(self.angle - angle_to_player) % 360 < 5 and self.player_in_sight:
+        if abs(self.angle - angle_to_player) % 360 <\
+                5 and self.player_in_sight:
             self.fire = True
             print('fire')
         else:
@@ -129,3 +130,6 @@ class Enemy(arcade.SpriteList):
             self.game_view.explosions, ENEMY_VIEW)
         self.hull.update(delta_time)
         self.turret.update(delta_time, self.hull)
+
+        
+arcade.DefaultTextureAtlas

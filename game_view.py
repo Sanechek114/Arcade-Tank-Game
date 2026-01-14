@@ -6,6 +6,7 @@ from tank import Tank_hull, Tank_turret
 from explosion import Explosion
 from pause_class import PauseView
 from enemy_class import Enemy
+from load_textures_class import Load_textures
 
 
 class GameView(arcade.View):
@@ -30,6 +31,9 @@ class GameView(arcade.View):
             fv = random.choice([block.texture.flip_vertically(),
                                 block.texture])
             block.texture = fv
+        
+        self.textures = Load_textures()
+        
 
         self.reloudtimer = 0
         self.mouseXY = (0, 0)
@@ -87,8 +91,8 @@ class GameView(arcade.View):
                     self.bullets.remove(bullet)
                     if self.tank_hull.lives == 0:
                         self.explosions.append(
-                            Explosion(*self.tank_hull.position, self.explosions))
-
+                            Explosion(*self.tank_hull.position,
+                                      self.explosions))
 
     def draw_reloding_lives(self):
         try:

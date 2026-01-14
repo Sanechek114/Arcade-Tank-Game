@@ -28,7 +28,7 @@ class MenuView(arcade.View):
         texture_hovered = arcade.load_texture(":resources:/gui_basic_assets/button/red_hover.png")
         texture_pressed = arcade.load_texture(":resources:/gui_basic_assets/button/red_press.png")
 
-        label = UILabel(text="Arcade Tank",
+        label = UILabel(text="Танчики",
                         font_size=60,
                         text_color=arcade.color.WHITE,
                         width=300,

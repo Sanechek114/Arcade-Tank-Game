@@ -1,7 +1,6 @@
 import arcade
 from arcade.gui import (
     UITextureButton, UIManager, UIAnchorLayout, UIBoxLayout, UILabel)
-from pyglet.graphics import Batch
 
 # это должно быть в key_press в GameView
 """if key == arcade.key.ESCAPE:

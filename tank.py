@@ -1,5 +1,5 @@
 import arcade
-from config import (SCALE, BULLET_TIME, BULLET_SPEED, 
+from config import (SCALE,
                     BRAKINGFORCE, MAX_SPEED, ACCELERATION,
                     HULLROTATIONSPEED, TURRETROTATIONSPEED, RELOUDTIME)
 import math
@@ -50,23 +50,27 @@ class Tank_hull(arcade.Sprite):
                 self.acceleration = BRAKINGFORCE
                 self.speed = min(
                     (self.speed + self.acceleration * delta_time, 0))
-        
+
         turret_angle = self.game_view.tank_turret.angle
 
         if self.game_view.right and not self.game_view.left:
             if self.speed < 0:
                 self.angle = self.angle - HULLROTATIONSPEED * delta_time
-                self.game_view.tank_turret.angle = turret_angle - HULLROTATIONSPEED * delta_time
+                self.game_view.tank_turret.angle = turret_angle - \
+                    HULLROTATIONSPEED * delta_time
             else:
                 self.angle = self.angle + HULLROTATIONSPEED * delta_time
-                self.game_view.tank_turret.angle = turret_angle + HULLROTATIONSPEED * delta_time
+                self.game_view.tank_turret.angle = turret_angle + \
+                    HULLROTATIONSPEED * delta_time
         if not self.game_view.right and self.game_view.left:
             if self.speed < 0:
                 self.angle = self.angle + HULLROTATIONSPEED * delta_time
-                self.game_view.tank_turret.angle = turret_angle + HULLROTATIONSPEED * delta_time
+                self.game_view.tank_turret.angle = turret_angle + \
+                    HULLROTATIONSPEED * delta_time
             else:
                 self.angle = self.angle - HULLROTATIONSPEED * delta_time
-                self.game_view.tank_turret.angle = turret_angle - HULLROTATIONSPEED * delta_time
+                self.game_view.tank_turret.angle = turret_angle - \
+                    HULLROTATIONSPEED * delta_time
 
         speedx = self.speed * math.sin(
             math.radians(self.angle + 270)) * delta_time
@@ -118,4 +122,3 @@ class Tank_turret(arcade.Sprite):
                       y + -SCALE * 10 * math.cos(math.radians(angle + 90)))
             newBullet = Bullet(Bx, By, angle, self.game_view.bullets, True)
             self.game_view.bullets.append(newBullet)
-
