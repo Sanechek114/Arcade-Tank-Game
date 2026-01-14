@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="13" tilewidth="64" tileheight="64" infinite="0" nextlayerid="5" nextobjectid="1">
+ <tileset firstgid="1" source="tank_map.tsx"/>
+ <layer id="1" name="Слой тайлов 1" width="20" height="13">
+  <data encoding="base64" compression="zlib">
+   eJytkc0KgzAQhBMl9iBaxWrAHgpW8f3f0A1EGIasP+Dhg9lkMrtJrDHGPkgOvKh+CyVQJ3x8xoI/o/NajesN9LU38sJs7YkP84K/oHtmSvaVPL5DyHUP5e3zVvDOBWh3Ia+hv2oTPXh+zr/zH0fgfB3wOak1VtC9MAleGIVv1IEl7jO7/x/rgfYHRacysM+s9J3BO4L2lPFTeiEb7/QMQw==
+  </data>
+ </layer>
+</map>
