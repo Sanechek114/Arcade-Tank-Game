@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="13" tilewidth="64" tileheight="64" infinite="0" nextlayerid="2" nextobjectid="1">
  <tileset firstgid="1" source="tank_map.tsx"/>
- <layer id="1" name="Слой тайлов 1" width="20" height="13">
+ <layer id="1" name="grass" width="20" height="13">
   <data encoding="base64" compression="zlib">
    eJy1kkkKgDAMRYOKVMWhC6eFutD7n9EWUwix0eKweFAKfeT/pgWAlpAZigCUYWFvLT2yCr7KEDPqC5+jE3yRZ7YIfZLrD9+AuXOWTX88n6/H1DCTzp/4eG6Fb6Q/eeqT5tuwvwmOfeC+ht3f+eg+J3DeOUtJzra/MdDn2xGeWZFMlDe+u9mcrxHy6gDfDlqhD0k=
   </data>

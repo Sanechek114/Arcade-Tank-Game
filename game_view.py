@@ -17,19 +17,8 @@ class GameView(arcade.View):
         self.world_width = SCREEN_WIDTH
         self.world_height = SCREEN_HEIGHT
         # карта
-        self.tile_map = arcade.load_tilemap("assets/map1.tmx", SCALE)
+        self.tile_map = arcade.load_tilemap("assets/tank_map_1.tmx", SCALE)
         self.scene = self.tile_map.sprite_lists['grass']
-        for block in self.scene:
-            r = random.choice([block.texture.rotate_90(),
-                               block.texture.rotate_180(),
-                               block.texture.rotate_270(), block.texture])
-            block.texture = r
-            fh = random.choice([block.texture.flip_horizontally(),
-                                block.texture])
-            block.texture = fh
-            fv = random.choice([block.texture.flip_vertically(),
-                                block.texture])
-            block.texture = fv
 
         self.reloudtimer = 0
         self.mouseXY = (0, 0)

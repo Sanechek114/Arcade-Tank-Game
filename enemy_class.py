@@ -28,7 +28,6 @@ class Tank_hull(arcade.Sprite):
         if atan < 0:
             atan += 2 * math.pi
         self.target_angle = math.degrees(atan) + 180
-        print(self.target_angle)
 
     def update(self, delta_time):
         if abs(self.position[0] - self.point[0]) < 2 and abs(
@@ -79,7 +78,6 @@ class Tank_turret(arcade.Sprite):
             angle_to_player = math.degrees(atan) + 180
         else:
             angle_to_player = hull.angle
-        print(abs(self.angle - angle_to_player))
         if abs(self.angle - angle_to_player) % 360 <\
                 5 and self.player_in_sight:
             self.fire = True
@@ -100,7 +98,6 @@ class Tank_turret(arcade.Sprite):
 
     def tank_shooting(self, delta_time):
         self.reloudtimer = max(self.reloudtimer - delta_time, 0)
-        print(self.fire, self.reloudtimer)
         if self.fire and self.reloudtimer == 0:
             self.shoot_sound.play(0.5)
             self.reloudtimer = RELOUDTIME

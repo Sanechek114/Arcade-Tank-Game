@@ -6,13 +6,13 @@ from config import SCALE, BULLET_SPEED, BULLET_TIME
 class Bullet(arcade.Sprite):
     def __init__(self, center_x, center_y, angle, bul_list, player=False):
         super().__init__(
-            'assets/sprites/bullet.png', SCALE, center_x, center_y, angle)
+            'assets/objects/bulletRed1_outline.png', SCALE, center_x, center_y, angle)
         self.texture = self.texture.flip_horizontally()
         self.bullet_timer = 0
         self.player = player
         self.change_x, self.change_y = (
-            BULLET_SPEED * math.sin(math.radians(angle - 90 + 360)),
-            BULLET_SPEED * math.cos(math.radians(angle - 90)))
+            BULLET_SPEED * math.sin(math.radians(angle - 180)),
+            BULLET_SPEED * math.cos(math.radians(angle - 180)))
         self.bul_list = bul_list
 
     def update(self, delta_time):
