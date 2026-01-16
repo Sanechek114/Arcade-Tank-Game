@@ -8,7 +8,7 @@ import math
 class Tank_hull(arcade.Sprite):
     def __init__(self, player):
         super().__init__(scale=SCALE)
-        self.texture = arcade.load_texture('assets/objects/tankBody_dark_outline.png')
+        self.texture = arcade.load_texture('assets/sprites/bodyes/enemy/tankBody_1.png')
         self.player = player
         self.speed = MAX_SPEED / 3
         self.on_point = True
@@ -56,7 +56,7 @@ class Tank_hull(arcade.Sprite):
 class Tank_turret(arcade.Sprite):
     def __init__(self, player, bullets):
         super().__init__(center_x=465 - 16 * 4, center_y=465, scale=SCALE)
-        self.texture = arcade.load_texture('assets/objects/tankDark_barrel1_outline.png')
+        self.texture = arcade.load_texture('assets/sprites/barrels/enemy/specialBarrel1.png')
         self.shoot_sound = arcade.load_sound("assets/sounds/awp.mp3")
         self.player = player
         self.bullets = bullets
@@ -78,7 +78,7 @@ class Tank_turret(arcade.Sprite):
         else:
             angle_to_player = hull.angle
         if abs(self.angle - angle_to_player) % 360 <\
-                5 and player_in_sight:
+                1 and player_in_sight:
             self.fire = True
             print('fire')
         else:

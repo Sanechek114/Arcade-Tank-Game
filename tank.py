@@ -9,7 +9,7 @@ from bullet_class import Bullet
 class Tank_hull(arcade.Sprite):
     def __init__(self, game_view):
         super().__init__(center_x=465, center_y=465, scale=SCALE)
-        self.texture = arcade.load_texture('assets/objects/tankBody_red_outline.png')
+        self.texture = arcade.load_texture('assets/sprites/bodyes/tankBody_blue_outline.png')
         self.game_view = game_view
         self.acceleration = 0
         self.speed = 0
@@ -73,7 +73,7 @@ class Tank_hull(arcade.Sprite):
 class Tank_turret(arcade.Sprite):
     def __init__(self, game_view):
         super().__init__(center_x=465 - 16 * 4, center_y=465, scale=SCALE)
-        self.texture = arcade.load_texture('assets/objects/tankRed_barrel2_outline.png')
+        self.texture = arcade.load_texture('assets/sprites/barrels/tankBlue_barrel2_outline.png')
         self.shoot_sound = arcade.load_sound("assets/sounds/shoot.mp3")
         self.game_view = game_view
         self.reloudtimer = 0
