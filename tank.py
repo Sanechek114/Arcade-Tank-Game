@@ -90,7 +90,6 @@ class Tank_turret(arcade.Sprite):
         if atan < 0:
             atan += 2 * math.pi
         mouse_angle = math.degrees(atan)
-        print(mouse_angle)
         if 0 < abs((mouse_angle - self.angle + 360 + 180) % 360) < 180:
             self.angle += TURRETROTATIONSPEED * delta_time
         if 360 > abs((mouse_angle - self.angle + 360 + 180) % 360) > 180:

@@ -17,7 +17,7 @@ class GameView(arcade.View):
         self.world_width = SCREEN_WIDTH
         self.world_height = SCREEN_HEIGHT
         # карта
-        self.tile_map = arcade.load_tilemap("assets/tank_map_1.tmx", SCALE)
+        self.tile_map = arcade.load_tilemap("assets/tank_map_2.tmx", SCALE)
         self.scene = self.tile_map.sprite_lists['grass']
 
         self.reloudtimer = 0
@@ -30,16 +30,16 @@ class GameView(arcade.View):
         self.right = False
         self.fire = False
 
-        self.enemy = Enemy(self)
-        self.enemies = []
-        self.enemies.append(self.enemy)
-
         self.tank_hull = Tank_hull(self)
         self.tank_turret = Tank_turret(self)
 
         self.tank = arcade.SpriteList()
         self.tank.append(self.tank_hull)
         self.tank.append(self.tank_turret)
+
+        self.enemy = Enemy(self.tank_hull, self.bullets, self.explosions)
+        self.enemies = []
+        self.enemies.append(self.enemy)
 
         self.enemies_hulls = arcade.SpriteList()
         for enemy in self.enemies:
