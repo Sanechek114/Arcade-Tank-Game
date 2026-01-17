@@ -33,15 +33,15 @@ class Tank_hull(arcade.Sprite):
     def update(self, delta_time, player_in_sight):
         self.next_point(player_in_sight)
         self.enemy_rotate(delta_time)
-        if abs(self.target_angle - self.angle) % 360 <= 30:
+        if abs(self.target_angle - self.angle) % 360 <= 60:
             self.position = (self.center_x + self.change_x,
                              self.center_y + self.change_y)
 
     def enemy_rotate(self, delta_time):
         if 0 < abs((self.target_angle - self.angle + 360) % 360) < 180:
-            self.angle += HULLROTATIONSPEED * delta_time
+            self.angle += HULLROTATIONSPEED / 1.5 * delta_time
         if 360 > abs((self.target_angle - self.angle + 360) % 360) > 180:
-            self.angle -= HULLROTATIONSPEED * delta_time
+            self.angle -= HULLROTATIONSPEED / 1.5 * delta_time
         if not self.on_point:
             print('Move')
             print(abs(self.target_angle - self.angle) % 360)
@@ -78,7 +78,7 @@ class Tank_turret(arcade.Sprite):
         else:
             angle_to_player = hull.angle
         if abs(self.angle - angle_to_player) % 360 <\
-                1 and player_in_sight:
+                5 and player_in_sight:
             self.fire = True
             print('fire')
         else:

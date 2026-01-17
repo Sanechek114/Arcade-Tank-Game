@@ -2,7 +2,7 @@ import arcade
 import random
 from config import (SCALE, SCREEN_HEIGHT, SCREEN_WIDTH, RELOUDTIME,
                     CAMERA_LERP)
-from tank import Tank_hull, Tank_turret
+from tank import Player
 from explosion import Explosion
 from pause_class import PauseView
 from enemy_class import Enemy
@@ -30,14 +30,9 @@ class GameView(arcade.View):
         self.right = False
         self.fire = False
 
-        self.tank_hull = Tank_hull(self)
-        self.tank_turret = Tank_turret(self)
+        self.player = Player(self.bullets, self.explosions)
 
-        self.tank = arcade.SpriteList()
-        self.tank.append(self.tank_hull)
-        self.tank.append(self.tank_turret)
-
-        self.enemy = Enemy(self.tank_hull, self.bullets, self.explosions)
+        self.enemy = Enemy(self.player.hull, self.bullets, self.explosions)
         self.enemies = []
         self.enemies.append(self.enemy)
 
@@ -46,42 +41,43 @@ class GameView(arcade.View):
             self.enemies_hulls.append(enemy.hull)
 
         self.enemy_to_player_colis = arcade.PhysicsEngineSimple(
-            self.tank_hull, self.enemies_hulls)
+            self.player.hull, self.enemies_hulls)
 
     def on_draw(self):
         self.clear()
         self.world_camera.use()
         self.scene.draw(pixelated=True)
         self.bullets.draw(pixelated=True)
-        self.tank.draw(pixelated=True)
+        self.player.draw(pixelated=True)
         for enemy in self.enemies:
             enemy.draw(pixelated=True)
         self.explosions.draw(pixelated=True)
         self.draw_reloding_lives()
 
     def on_update(self, delta_time):
-        self.tank_hull.update(delta_time)
-        self.tank_turret.update(delta_time)
+        control = (self.forward, self.backward,
+                   self.right, self.left, self.fire, self.mouseXY)
+        self.player.update(delta_time, control)
         self.enemy.update(delta_time)
         self.enemy_to_player_colis.update()
         self.bullets.update(delta_time)
         self.explosions.update(delta_time)
         self.world_camera_update()
         bullets = arcade.check_for_collision_with_list(
-            self.tank_hull, self.bullets)
+            self.player.hull, self.bullets)
         if bullets:
             for bullet in bullets:
                 if not bullet.player:
-                    self.tank_hull.lives -= 1
+                    self.player.lives -= 1
                     self.bullets.remove(bullet)
-                    if self.tank_hull.lives == 0:
+                    if self.player.lives == 0:
                         self.explosions.append(
-                            Explosion(*self.tank_hull.position,
+                            Explosion(*self.player.hull.position,
                                       self.explosions))
 
     def draw_reloding_lives(self):
         try:
-            dx = (RELOUDTIME - self.tank_turret.reloudtimer) / RELOUDTIME
+            dx = (RELOUDTIME - self.player.turret.reloudtimer) / RELOUDTIME
         except ZeroDivisionError:
             dx = 0
         x, y = self.world_camera.position
@@ -91,7 +87,7 @@ class GameView(arcade.View):
         arcade.draw_lbwh_rectangle_filled(
             x + self.width * 0.15, y - self.height * 0.45,
             -self.width * 0.3 * (1 - dx), SCALE * 4, arcade.color.RED)
-        for n in range(self.tank_hull.lives):
+        for n in range(self.player.lives):
             arcade.draw_lbwh_rectangle_filled(
                 x - self.width * 0.14 + n * 0.1 * self.width,
                 y - self.height * 0.43,
@@ -99,8 +95,8 @@ class GameView(arcade.View):
 
     def world_camera_update(self):
         position = (
-            self.tank_hull.center_x,
-            self.tank_hull.center_y
+            self.player.hull.center_x,
+            self.player.hull.center_y
         )
         self.world_camera.position = arcade.math.lerp_2d(
             self.world_camera.position,

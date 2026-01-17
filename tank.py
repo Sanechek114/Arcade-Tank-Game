@@ -1,5 +1,5 @@
 import arcade
-from config import (SCALE,
+from config import (SCALE, SCREEN_WIDTH, SCREEN_HEIGHT,
                     BRAKINGFORCE, MAX_SPEED, ACCELERATION,
                     HULLROTATIONSPEED, TURRETROTATIONSPEED, RELOUDTIME)
 import math
@@ -7,56 +7,34 @@ from bullet_class import Bullet
 
 
 class Tank_hull(arcade.Sprite):
-    def __init__(self, game_view):
+    def __init__(self, ):
         super().__init__(center_x=465, center_y=465, scale=SCALE)
         self.texture = arcade.load_texture('assets/sprites/bodyes/tankBody_blue_outline.png')
-        self.game_view = game_view
-        self.acceleration = 0
         self.speed = 0
-        self.lives = 3
+        self.time_inter = 0.01
 
-    def update(self, delta_time):
-        self.tank_control(delta_time)
+    def update(self, delta_time, control):
+        forward, backward, right, left = control
 
-    def tank_control(self, delta_time):
-        if self.game_view.forward or self.game_view.backward:
-            if self.game_view.forward and not self.game_view.backward:
-                if self.speed < 0:
-                    self.acceleration = BRAKINGFORCE + ACCELERATION
-                    self.speed = min(
-                        (self.speed +
-                         self.acceleration * delta_time, 0))
-                else:
-                    self.acceleration = ACCELERATION * (
-                        (MAX_SPEED - abs(self.speed)) / MAX_SPEED)
-                    self.speed += self.acceleration * delta_time
-            if not self.game_view.forward and self.game_view.backward:
-                if self.speed > 0:
-                    self.acceleration = -(BRAKINGFORCE + ACCELERATION)
-                    self.speed = max(
-                        (self.speed +
-                         self.acceleration * delta_time, 0))
-                else:
-                    self.acceleration = -ACCELERATION * (
-                        (MAX_SPEED / 2 - abs(self.speed)) / MAX_SPEED)
-                    self.speed += self.acceleration * delta_time
+        if forward and not backward:
+            self.speed = arcade.math.lerp(
+                self.speed, MAX_SPEED, self.time_inter)
 
-        if not self.game_view.backward and not self.game_view.forward:
-            if self.speed > 0:
-                self.acceleration = -BRAKINGFORCE
-                self.speed = max(
-                    (self.speed + self.acceleration * delta_time, 0))
-            if self.speed < 0:
-                self.acceleration = BRAKINGFORCE
-                self.speed = min(
-                    (self.speed + self.acceleration * delta_time, 0))
+        elif not forward and backward:
+            self.speed = arcade.math.lerp(
+                self.speed, -MAX_SPEED, self.time_inter)
 
-        if self.game_view.right and not self.game_view.left:
+        else:
+            self.speed = arcade.math.lerp(
+                self.speed, 0, self.time_inter)
+        
+
+        if right and not left:
             if self.speed < 0:
                 self.angle = self.angle - HULLROTATIONSPEED * delta_time
             else:
                 self.angle = self.angle + HULLROTATIONSPEED * delta_time
-        if not self.game_view.right and self.game_view.left:
+        if not right and left:
             if self.speed < 0:
                 self.angle = self.angle + HULLROTATIONSPEED * delta_time
             else:
@@ -71,21 +49,22 @@ class Tank_hull(arcade.Sprite):
 
 
 class Tank_turret(arcade.Sprite):
-    def __init__(self, game_view):
+    def __init__(self, bullets, hull):
         super().__init__(center_x=465 - 16 * 4, center_y=465, scale=SCALE)
         self.texture = arcade.load_texture('assets/sprites/barrels/tankBlue_barrel2_outline.png')
         self.shoot_sound = arcade.load_sound("assets/sounds/shoot.mp3")
-        self.game_view = game_view
+        self.bullets = bullets
+        self.hull = hull
         self.reloudtimer = 0
 
-    def update(self, delta_time):
-        self.turret_update(delta_time)
-        self.tank_shooting(delta_time)
+    def update(self, delta_time, control):
+        self.turret_update(delta_time, control[1])
+        self.tank_shooting(delta_time, control[0])
 
-    def turret_update(self, delta_time):
-        Wx, Wy = self.game_view.width // 2, self.game_view.height // 2
-        Mx, My = self.game_view.mouseXY
-        Hx, Hy = self.game_view.tank_hull.position
+    def turret_update(self, delta_time, mouseXY):
+        Wx, Wy = SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2
+        Mx, My = mouseXY
+        Hx, Hy = self.hull.position
         atan = math.atan2(-Wx + Mx, -Wy + My)
         if atan < 0:
             atan += 2 * math.pi
@@ -101,14 +80,30 @@ class Tank_turret(arcade.Sprite):
             math.radians((self.angle) % 360))
         self.position = Tx, Ty
 
-    def tank_shooting(self, delta_time):
+    def tank_shooting(self, delta_time, fire):
         self.reloudtimer = max(self.reloudtimer - delta_time, 0)
-        if self.game_view.fire and self.reloudtimer == 0:
+        if fire and self.reloudtimer == 0:
             self.shoot_sound.play(0.5)
             self.reloudtimer = RELOUDTIME
             x, y = self.center_x, self.center_y
             angle = self.angle
             Bx, By = (x + -SCALE * 10 * math.sin(math.radians(angle)),
                       y + -SCALE * 10 * math.cos(math.radians(angle)))
-            newBullet = Bullet(Bx, By, angle, self.game_view.bullets, True)
-            self.game_view.bullets.append(newBullet)
+            newBullet = Bullet(Bx, By, angle, self.bullets, True)
+            self.bullets.append(newBullet)
+
+
+class Player(arcade.SpriteList):
+    def __init__(self, bullets, walls):
+        super().__init__()
+        self.bullets = bullets
+        self.walls = walls
+        self.hull = Tank_hull()
+        self.turret = Tank_turret(bullets, self.hull)
+        self.append(self.hull)
+        self.append(self.turret)
+        self.lives = 3
+
+    def update(self, delta_time, control):
+        self.hull.update(delta_time, control[:4])
+        self.turret.update(delta_time, control[4:])
