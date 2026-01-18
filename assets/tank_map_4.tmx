@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="13" tilewidth="64" tileheight="64" infinite="0" nextlayerid="10" nextobjectid="348">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="13" tilewidth="64" tileheight="64" infinite="0" nextlayerid="11" nextobjectid="364">
  <tileset firstgid="1" name="ttt" tilewidth="64" tileheight="64" tilecount="40" columns="10">
-  <image source="PycharmProjects/Arcade-Tank-Game/assets/tiles/terrainTiles_default.png" width="640" height="256"/>
+  <image source="tiles/terrainTiles_default.png" width="640" height="256"/>
  </tileset>
- <tileset firstgid="41" source="PycharmProjects/Arcade-Tank-Game/assets/objects.tsx"/>
- <tileset firstgid="158" source="PycharmProjects/Arcade-Tank-Game/assets/tank_map.tsx"/>
+ <tileset firstgid="41" source="objects.tsx"/>
  <layer id="1" name="grass" width="20" height="13">
   <data encoding="csv">
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 1,1,1,1,2,1,1,1,1,1,1,21,21,1,21,1,1,1,1,1,
-1,1,1,1,2,1,1,1,1,1,21,179,1,21,21,1,1,1,1,1,
-1,1,1,1,13,3,3,3,3,30,23,183,35,21,1,21,1,1,1,1,
+1,1,1,1,2,1,1,1,1,1,21,22,1,21,21,1,1,1,1,1,
+1,1,1,1,13,3,3,3,3,30,23,26,35,21,1,21,1,1,1,1,
 1,1,1,1,2,1,1,21,1,21,21,21,22,21,21,21,1,1,1,1,
 1,1,1,1,2,1,1,21,21,21,21,21,22,21,21,21,1,1,1,1,
 1,1,1,1,2,1,21,21,21,21,21,21,22,21,21,1,1,1,1,1,
@@ -22,6 +21,22 @@
 1,1,2,1,21,21,21,22,21,21,21,21,21,21,1,1,1,1,1,1
 </data>
  </layer>
+ <objectgroup id="10" name="decorations">
+  <object id="350" gid="144" x="611.667" y="262.333" width="50" height="50"/>
+  <object id="351" gid="144" x="544" y="232.333" width="50" height="50"/>
+  <object id="352" gid="144" x="779" y="116.333" width="50" height="50"/>
+  <object id="353" gid="144" x="581.667" y="385.667" width="50" height="50"/>
+  <object id="354" gid="145" x="587.667" y="332.333" width="14" height="14"/>
+  <object id="355" gid="145" x="596.75" y="327.75" width="14" height="14"/>
+  <object id="356" gid="145" x="606" y="334.75" width="14" height="14"/>
+  <object id="357" gid="144" x="397" y="525" width="50" height="50"/>
+  <object id="358" gid="144" x="260.333" y="745" width="50" height="50"/>
+  <object id="359" gid="145" x="872.5" y="653.5" width="14" height="14"/>
+  <object id="360" gid="145" x="945.75" y="700" width="14" height="14"/>
+  <object id="361" gid="145" x="346" y="755" width="14" height="14"/>
+  <object id="362" gid="145" x="380" y="464.5" width="14" height="14"/>
+  <object id="363" gid="145" x="727" y="87.5" width="14" height="14"/>
+ </objectgroup>
  <objectgroup id="6" name="breaking">
   <object id="240" gid="142" x="261.653" y="198.856" width="48" height="16" rotation="91.0574"/>
   <object id="241" gid="142" x="569.624" y="288.963" width="48" height="16" rotation="116.671"/>
