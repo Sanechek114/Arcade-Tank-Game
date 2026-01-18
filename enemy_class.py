@@ -60,10 +60,12 @@ class Tank_turret(arcade.Sprite):
         super().__init__(center_x=465 - 16 * 4, center_y=465, scale=SCALE)
         self.texture = arcade.load_texture('assets/sprites/barrels/enemy/specialBarrel1.png')
         self.shoot_sound = arcade.load_sound("assets/sounds/awp.mp3")
+        self.bullet_path = 'assets/sprites/bullets/enemy/bulletDark1_outline.png'
         self.player = player
         self.bullets = bullets
         self.reloudtimer = 0
         self.fire = False
+
 
     def update(self, delta_time, hull, player_in_sight):
         self.turret_update(delta_time, hull, player_in_sight)
@@ -106,7 +108,7 @@ class Tank_turret(arcade.Sprite):
             angle = self.angle
             Bx, By = (x + -SCALE * 10 * math.sin(math.radians(angle)),
                       y + -SCALE * 10 * math.cos(math.radians(angle)))
-            newBullet = Bullet(Bx, By, angle, self.bullets)
+            newBullet = Bullet(self.bullet_path, Bx, By, angle, self.bullets)
             self.bullets.append(newBullet)
 
 

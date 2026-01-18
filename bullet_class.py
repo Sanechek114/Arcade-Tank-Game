@@ -4,9 +4,9 @@ from config import SCALE, BULLET_SPEED, BULLET_TIME
 
 
 class Bullet(arcade.Sprite):
-    def __init__(self, center_x, center_y, angle, bul_list, player=False):
+    def __init__(self, path, center_x, center_y, angle, bul_list, player=False):
         super().__init__(
-            'assets/sprites/bullets/enemy/bulletDark1_outline.png', SCALE, center_x, center_y, angle)
+            path, SCALE, center_x, center_y, angle)
         self.bullet_timer = 0
         self.texture = self.texture.flip_vertically()
         self.player = player

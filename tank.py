@@ -1,14 +1,14 @@
 import arcade
 from config import (SCALE, SCREEN_WIDTH, SCREEN_HEIGHT, LIVES,
-                    BRAKINGFORCE, MAX_SPEED, ACCELERATION,
+                    MAX_SPEED,
                     HULLROTATIONSPEED, TURRETROTATIONSPEED, RELOUDTIME)
 import math
 from bullet_class import Bullet
 
 
 class Tank_hull(arcade.Sprite):
-    def __init__(self, ):
-        super().__init__(center_x=100, center_y=200, scale=SCALE)
+    def __init__(self, path):
+        super().__init__(path, center_x=100, center_y=200, scale=SCALE)
         self.texture = arcade.load_texture('assets/sprites/bodyes/tankBody_blue_outline.png')
         self.speed = 0
 
@@ -39,9 +39,9 @@ class Tank_hull(arcade.Sprite):
 
 
 class Tank_turret(arcade.Sprite):
-    def __init__(self, bullets, hull):
-        super().__init__(center_x=465 - 16 * 4, center_y=465, scale=SCALE)
-        self.texture = arcade.load_texture('assets/sprites/barrels/tankBlue_barrel2_outline.png')
+    def __init__(self, path, bullet_path, bullets, hull):
+        super().__init__(path, center_x=465 - 16 * 4, center_y=465, scale=SCALE)
+        self.bullet_path = bullet_path
         self.shoot_sound = arcade.load_sound("assets/sounds/shoot.mp3")
         self.bullets = bullets
         self.hull = hull
@@ -60,9 +60,9 @@ class Tank_turret(arcade.Sprite):
             atan += 2 * math.pi
         mouse_angle = math.degrees(atan)
         if 0 < abs((mouse_angle - self.angle + 360 + 180) % 360) < 180:
-            self.angle += TURRETROTATIONSPEED * (self.speed) * delta_time
+            self.angle += TURRETROTATIONSPEED * delta_time
         if 360 > abs((mouse_angle - self.angle + 360 + 180) % 360) > 180:
-            self.angle -= TURRETROTATIONSPEED * (self.speed) * delta_time
+            self.angle -= TURRETROTATIONSPEED * delta_time
 
         Tx = Hx - (11) * SCALE * math.sin(
             math.radians((self.angle) % 360))
@@ -79,17 +79,18 @@ class Tank_turret(arcade.Sprite):
             angle = self.angle
             Bx, By = (x + -SCALE * 10 * math.sin(math.radians(angle)),
                       y + -SCALE * 10 * math.cos(math.radians(angle)))
-            newBullet = Bullet(Bx, By, angle, self.bullets, True)
+            newBullet = Bullet(
+                self.bullet_path, Bx, By, angle, self.bullets, True)
             self.bullets.append(newBullet)
 
 
 class Player(arcade.SpriteList):
-    def __init__(self, color, turret, bullets, walls):
+    def __init__(self, color, turret_id, bullets, walls):
         super().__init__()
         self.bullets = bullets
         self.walls = walls
-        self.color = color
-        self.turret = turret
+        self.tank_color = color
+        self.turret_id = turret_id
         # color: reloud time, lives, speed
         modifications = {'red': (
                              RELOUDTIME, LIVES, MAX_SPEED),
@@ -101,11 +102,15 @@ class Player(arcade.SpriteList):
                              RELOUDTIME, LIVES // 2, MAX_SPEED * 2)}
 
         self.modification = modifications[color]
+        self.turret_path = f"assets/sprites/barrels/tank{
+            color.capitalize()}_barrel{turret_id}.png"
+        self.hull_path = f"assets/sprites/bodyes/tankBody_{
+            color}_outline.png"
+        self.bullet_path = f"assets/sprites/bullets/bullet{
+            color.capitalize()}{turret_id}_outline.png"
 
-        self.turret = {'red': }
-
-        self.hull = Tank_hull()
-        self.turret = Tank_turret(bullets, self.hull)
+        self.hull = Tank_hull(self.hull_path)
+        self.turret = Tank_turret(self.turret_path, self.bullet_path, bullets, self.hull)
         self.append(self.hull)
         self.append(self.turret)
         self.lives = 3

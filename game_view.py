@@ -38,7 +38,7 @@ class GameView(arcade.View):
         self.right = False
         self.fire = False
 
-        self.player = Player(self.bullets, self.explosions)
+        self.player = Player('blue', 2, self.bullets, self.explosions)
 
         self.enemy = Enemy(self.player.hull, self.bullets, self.ai_walls)
         self.enemies = []
