@@ -1,5 +1,5 @@
 import arcade
-from config import (SCALE, SCREEN_WIDTH, SCREEN_HEIGHT,
+from config import (SCALE, SCREEN_WIDTH, SCREEN_HEIGHT, LIVES,
                     BRAKINGFORCE, MAX_SPEED, ACCELERATION,
                     HULLROTATIONSPEED, TURRETROTATIONSPEED, RELOUDTIME)
 import math
@@ -8,25 +8,21 @@ from bullet_class import Bullet
 
 class Tank_hull(arcade.Sprite):
     def __init__(self, ):
-        super().__init__(center_x=465, center_y=465, scale=SCALE)
+        super().__init__(center_x=100, center_y=200, scale=SCALE)
         self.texture = arcade.load_texture('assets/sprites/bodyes/tankBody_blue_outline.png')
         self.speed = 0
-        self.time_inter = 0.01
 
     def update(self, delta_time, control):
         forward, backward, right, left = control
 
         if forward and not backward:
-            self.speed = arcade.math.lerp(
-                self.speed, MAX_SPEED, self.time_inter)
+            self.speed += (MAX_SPEED - self.speed) * delta_time
 
         elif not forward and backward:
-            self.speed = arcade.math.lerp(
-                self.speed, -MAX_SPEED, self.time_inter)
+            self.speed += (-MAX_SPEED - self.speed) * delta_time
 
         else:
-            self.speed = arcade.math.lerp(
-                self.speed, 0, self.time_inter)
+            self.speed += (0 - self.speed) * delta_time
 
         if right and not left:
             self.angle = self.angle + HULLROTATIONSPEED * delta_time
@@ -39,7 +35,7 @@ class Tank_hull(arcade.Sprite):
         self.change_y = self.speed * math.cos(
             math.radians(self.angle + 180)) * delta_time
 
-        self.position = (self.center_x + self.center_x, self.center_y + self.change_y)
+        #  self.position = (self.center_x + self.change_x, self.center_y + self.change_y)
 
 
 class Tank_turret(arcade.Sprite):
@@ -64,9 +60,9 @@ class Tank_turret(arcade.Sprite):
             atan += 2 * math.pi
         mouse_angle = math.degrees(atan)
         if 0 < abs((mouse_angle - self.angle + 360 + 180) % 360) < 180:
-            self.angle += TURRETROTATIONSPEED * delta_time
+            self.angle += TURRETROTATIONSPEED * (self.speed) * delta_time
         if 360 > abs((mouse_angle - self.angle + 360 + 180) % 360) > 180:
-            self.angle -= TURRETROTATIONSPEED * delta_time
+            self.angle -= TURRETROTATIONSPEED * (self.speed) * delta_time
 
         Tx = Hx - (11) * SCALE * math.sin(
             math.radians((self.angle) % 360))
@@ -88,10 +84,26 @@ class Tank_turret(arcade.Sprite):
 
 
 class Player(arcade.SpriteList):
-    def __init__(self, bullets, walls):
+    def __init__(self, color, turret, bullets, walls):
         super().__init__()
         self.bullets = bullets
         self.walls = walls
+        self.color = color
+        self.turret = turret
+        # color: reloud time, lives, speed
+        modifications = {'red': (
+                             RELOUDTIME, LIVES, MAX_SPEED),
+                         'blue': (
+                             RELOUDTIME // 2, LIVES, MAX_SPEED // 2),
+                         'green': (
+                             RELOUDTIME * 2, LIVES * 2, MAX_SPEED),
+                         'yellow': (
+                             RELOUDTIME, LIVES // 2, MAX_SPEED * 2)}
+
+        self.modification = modifications[color]
+
+        self.turret = {'red': }
+
         self.hull = Tank_hull()
         self.turret = Tank_turret(bullets, self.hull)
         self.append(self.hull)

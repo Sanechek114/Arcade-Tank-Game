@@ -3,6 +3,7 @@ from config import (SCALE, ENEMY_VIEW, MAX_SPEED,
                     HULLROTATIONSPEED, TURRETROTATIONSPEED, RELOUDTIME)
 from bullet_class import Bullet
 import math
+from explosion import Explosion
 
 
 class Tank_hull(arcade.Sprite):
@@ -14,6 +15,7 @@ class Tank_hull(arcade.Sprite):
         self.on_point = True
         self.player_point = self.position
         self.target_angle = self.angle
+        self.lives = 1
 
     def next_point(self, player_in_sight):
         Hx, Hy = self.position
@@ -118,9 +120,8 @@ class Enemy(arcade.SpriteList):
         self.turret = Tank_turret(player, bullets)
         self.append(self.hull)
         self.append(self.turret)
-        self.lives = 2
 
-    def update(self, delta_time):
+    def update(self, delta_time, enemies, explosions):
         self.player_in_sight = arcade.has_line_of_sight(
             self.player.position,
             self.hull.position,
@@ -129,3 +130,6 @@ class Enemy(arcade.SpriteList):
         self.hull.update(delta_time, self.player_in_sight)
         self.turret.update(delta_time, self.hull,
                            self.player_in_sight)
+        if self.hull.lives == 0:
+            explosions.append(Explosion(*self.hull.position, explosions))
+            enemies.remove(self)

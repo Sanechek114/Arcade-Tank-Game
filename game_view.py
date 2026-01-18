@@ -1,5 +1,4 @@
 import arcade
-import random
 from config import (SCALE, SCREEN_HEIGHT, SCREEN_WIDTH, RELOUDTIME,
                     CAMERA_LERP)
 from tank import Player
@@ -79,10 +78,14 @@ class GameView(arcade.View):
                    self.right, self.left, self.fire, self.mouseXY)
 
         self.player.update(delta_time, control)
-        self.enemy.update(delta_time)
+        for enemy in self.enemies:
+            enemy.update(delta_time, self.enemies, self.explosions)
 
-        self.enemy_to_player_colis.update()
-        self.collision.update()
+        colliding = self.enemy_to_player_colis.update()
+        colliding += self.collision.update()
+
+        if len(colliding):
+            self.player.hull.speed = 0
 
         self.bullets.update(delta_time)
         self.explosions.update(delta_time)
@@ -100,13 +103,22 @@ class GameView(arcade.View):
                                       self.explosions))
         for bullet in self.bullets:
             broken = arcade.check_for_collision_with_list(
-                bullet, self.breaking, 1)
+                bullet, self.breaking, 3)
             if broken:
                 self.bullets.remove(bullet)
                 for elem in broken:
                     self.breaking.remove(elem)
                     self.ai_walls.remove(elem)
                     self.walls.remove(elem)
+
+        for bullet in self.bullets:
+            enemies = arcade.check_for_collision_with_list(
+                bullet, self.enemies_hulls, 3)
+
+            if enemies and bullet.player:
+                self.bullets.remove(bullet)
+                for enemy in enemies:
+                    enemy.lives -= 1
 
     def draw_reloding_lives(self):
         try:
