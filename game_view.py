@@ -17,8 +17,17 @@ class GameView(arcade.View):
         self.world_width = SCREEN_WIDTH
         self.world_height = SCREEN_HEIGHT
         # карта
-        self.tile_map = arcade.load_tilemap("assets/tank_map_2.tmx", SCALE)
+        self.tile_map = arcade.load_tilemap("assets/tank_map_1.tmx", SCALE)
         self.scene = self.tile_map.sprite_lists['grass']
+        self.static = self.tile_map.sprite_lists['statics']
+        self.trees = self.tile_map.sprite_lists['trees']
+        self.breaking = self.tile_map.sprite_lists['breaking']
+        self.decorations = self.tile_map.sprite_lists['decorations']
+
+        self.ai_walls = arcade.SpriteList(True)
+        self.ai_walls.extend(self.static)
+        self.ai_walls.extend(self.trees)
+        self.ai_walls.extend(self.breaking)
 
         self.reloudtimer = 0
         self.mouseXY = (0, 0)
@@ -32,9 +41,16 @@ class GameView(arcade.View):
 
         self.player = Player(self.bullets, self.explosions)
 
-        self.enemy = Enemy(self.player.hull, self.bullets, self.explosions)
+        self.enemy = Enemy(self.player.hull, self.bullets, self.ai_walls)
         self.enemies = []
         self.enemies.append(self.enemy)
+
+        self.walls = arcade.SpriteList(True)
+        self.walls.extend(self.static)
+        self.walls.extend(self.breaking)
+
+        self.collision = arcade.PhysicsEngineSimple(
+            self.player.hull, self.walls)
 
         self.enemies_hulls = arcade.SpriteList()
         for enemy in self.enemies:
@@ -47,19 +63,27 @@ class GameView(arcade.View):
         self.clear()
         self.world_camera.use()
         self.scene.draw(pixelated=True)
+        self.decorations.draw(pixelated=True)
+        self.static.draw(pixelated=True)
+        self.breaking.draw(pixelated=True)
         self.bullets.draw(pixelated=True)
         self.player.draw(pixelated=True)
         for enemy in self.enemies:
             enemy.draw(pixelated=True)
+        self.trees.draw(pixelated=True)
         self.explosions.draw(pixelated=True)
         self.draw_reloding_lives()
 
     def on_update(self, delta_time):
         control = (self.forward, self.backward,
                    self.right, self.left, self.fire, self.mouseXY)
+
         self.player.update(delta_time, control)
         self.enemy.update(delta_time)
+
         self.enemy_to_player_colis.update()
+        self.collision.update()
+
         self.bullets.update(delta_time)
         self.explosions.update(delta_time)
         self.world_camera_update()
@@ -74,6 +98,15 @@ class GameView(arcade.View):
                         self.explosions.append(
                             Explosion(*self.player.hull.position,
                                       self.explosions))
+        for bullet in self.bullets:
+            broken = arcade.check_for_collision_with_list(
+                bullet, self.breaking, 1)
+            if broken:
+                self.bullets.remove(bullet)
+                for elem in broken:
+                    self.breaking.remove(elem)
+                    self.ai_walls.remove(elem)
+                    self.walls.remove(elem)
 
     def draw_reloding_lives(self):
         try:

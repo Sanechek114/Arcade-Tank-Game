@@ -124,7 +124,8 @@ class Enemy(arcade.SpriteList):
         self.player_in_sight = arcade.has_line_of_sight(
             self.player.position,
             self.hull.position,
-            self.walls, ENEMY_VIEW)
+            self.walls, ENEMY_VIEW,
+            10)
         self.hull.update(delta_time, self.player_in_sight)
         self.turret.update(delta_time, self.hull,
                            self.player_in_sight)

@@ -27,25 +27,19 @@ class Tank_hull(arcade.Sprite):
         else:
             self.speed = arcade.math.lerp(
                 self.speed, 0, self.time_inter)
-        
 
         if right and not left:
-            if self.speed < 0:
-                self.angle = self.angle - HULLROTATIONSPEED * delta_time
-            else:
-                self.angle = self.angle + HULLROTATIONSPEED * delta_time
+            self.angle = self.angle + HULLROTATIONSPEED * delta_time
+
         if not right and left:
-            if self.speed < 0:
-                self.angle = self.angle + HULLROTATIONSPEED * delta_time
-            else:
-                self.angle = self.angle - HULLROTATIONSPEED * delta_time
+            self.angle = self.angle - HULLROTATIONSPEED * delta_time
 
-        speedx = self.speed * math.sin(
+        self.change_x = self.speed * math.sin(
             math.radians(self.angle + 180)) * delta_time
-        speedy = self.speed * math.cos(
+        self.change_y = self.speed * math.cos(
             math.radians(self.angle + 180)) * delta_time
 
-        self.position = (self.center_x + speedx, self.center_y + speedy)
+        self.position = (self.center_x + self.center_x, self.center_y + self.change_y)
 
 
 class Tank_turret(arcade.Sprite):
