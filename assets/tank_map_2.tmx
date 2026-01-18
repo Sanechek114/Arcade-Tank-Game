@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="20" height="13" tilewidth="64" tileheight="64" infinite="0" nextlayerid="12" nextobjectid="588">
  <tileset firstgid="1" name="tank_map" tilewidth="64" tileheight="64" tilecount="40" columns="10">
-  <image source="OneDrive/Рабочий стол/terrainTiles_default.png" width="640" height="256"/>
+  <image source="tiles/terrainTiles_default.png" width="640" height="256"/>
  </tileset>
  <tileset firstgid="41" name="object_map2" tilewidth="64" tileheight="70" tilecount="30" columns="0">
   <grid orientation="orthogonal" width="1" height="1"/>
