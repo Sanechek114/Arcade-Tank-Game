@@ -1,12 +1,31 @@
 import arcade
+<<<<<<< HEAD
 from arcade.gui import (UITextureButton, UIManager, UIAnchorLayout, UIBoxLayout, UILabel)
 from game_view import GameView
+=======
+from arcade.gui import (UITextureButton, UIManager, UIAnchorLayout, UIBoxLayout, UILabel, UIDropdown)
+
+from game_view import GameView
+
+
+# это для цвета кнопок если что
+def get_color_tex(color):
+    return arcade.make_soft_square_texture(60, color, outer_alpha=255)
+>>>>>>> game_menu
 
 
 class MenuView(arcade.View):
     def __init__(self):
         super().__init__()
         self.background_color = arcade.color.DARK_GREEN
+
+        # спиок с картами
+        self.all_maps = ["1 карта", "2 карта", "3 карта", "4 карта"]
+
+        with open("progress.txt", "r", encoding="utf8") as file:
+            self.count = int(file.read().strip())
+
+        self.available_maps = self.all_maps[:self.count]
 
         self.manager = UIManager()
         self.manager.enable()
@@ -64,6 +83,42 @@ class MenuView(arcade.View):
                                       )
         exit_button.on_click = self.exit_click
         self.box_layout.add(exit_button)
+
+        color_row = UIBoxLayout(vertical=False, space_between=10)
+
+        red_button = UITextureButton(text="", width=60, height=50,
+                                     texture=get_color_tex(arcade.color.RED),
+                                     texture_hovered=get_color_tex(arcade.color.DARK_RED))
+        red_button.on_click = lambda event: (print("Выбрана красная кнопка"), self.start_game_click(event))
+        color_row.add(red_button)
+
+        blue_button = UITextureButton(text="", width=60, height=50,
+                                      texture=get_color_tex(arcade.color.BLUE),
+                                      texture_hovered=get_color_tex(arcade.color.DARK_BLUE))
+        blue_button.on_click = lambda event: (print("Выбрана синяя кнопка"), self.start_game_click(event))
+        color_row.add(blue_button)
+
+        green_button = UITextureButton(text="", width=60, height=50,
+                                       texture=get_color_tex(arcade.color.GREEN),
+                                       texture_hovered=get_color_tex(arcade.color.DARK_PASTEL_GREEN))
+        green_button.on_click = lambda event: (print("Выбрана зеленая кнопка"), self.start_game_click(event))
+        color_row.add(green_button)
+
+        yellow_button = UITextureButton(text="", width=60, height=50,
+                                        texture=get_color_tex(arcade.color.YELLOW),
+                                        texture_hovered=get_color_tex(arcade.color.GOLD))
+        yellow_button.on_click = lambda event: (print("Выбрана желтая кнопка"), self.start_game_click(event))
+        color_row.add(yellow_button)
+
+        self.box_layout.add(color_row)
+
+        dropdown = UIDropdown(
+            default=self.available_maps[0],
+            options=self.available_maps,
+            width=200,
+            height=30
+        )
+        self.box_layout.add(dropdown)
 
     # запускает игру
     def start_game_click(self, event):
