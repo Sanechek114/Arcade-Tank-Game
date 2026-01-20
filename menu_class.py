@@ -1,13 +1,26 @@
 import arcade
-from arcade.gui import UITextureButton, UIManager, UIAnchorLayout, UIBoxLayout
+from arcade.gui import (UITextureButton, UIManager, UIAnchorLayout, UIBoxLayout, UILabel, UIDropdown)
 
-from pyglet.graphics import Batch
+from game_view import GameView
+
+
+# это для цвета кнопок если что
+def get_color_tex(color):
+    return arcade.make_soft_square_texture(60, color, outer_alpha=255)
 
 
 class MenuView(arcade.View):
     def __init__(self):
         super().__init__()
         self.background_color = arcade.color.DARK_GREEN
+
+        # спиок с картами
+        self.all_maps = ["1 карта", "2 карта", "3 карта", "4 карта"]
+
+        with open("progress.txt", "r", encoding="utf8") as file:
+            self.count = int(file.read().strip())
+
+        self.available_maps = self.all_maps[:self.count]
 
         self.manager = UIManager()
         self.manager.enable()
@@ -21,9 +34,6 @@ class MenuView(arcade.View):
         self.anchor_layout.add(self.box_layout, anchor_x="center", anchor_y="center")
         self.manager.add(self.anchor_layout)
 
-        self.batch = Batch()
-        self.main_text = arcade.Text("Arcade Tank", self.window.width / 2, self.window.height / 2 + 200,
-                                     arcade.color.WHITE, font_size=40, anchor_x="center", batch=self.batch)
         # self.space_text = arcade.Text("Нажми SPACE, чтобы начать!", self.window.width / 2, self.window.height / 2 - 150,
         #                             arcade.color.WHITE, font_size=20, anchor_x="center", batch=self.batch)
 
@@ -31,6 +41,13 @@ class MenuView(arcade.View):
         texture_normal = arcade.load_texture(":resources:/gui_basic_assets/button/red_normal.png")
         texture_hovered = arcade.load_texture(":resources:/gui_basic_assets/button/red_hover.png")
         texture_pressed = arcade.load_texture(":resources:/gui_basic_assets/button/red_press.png")
+
+        label = UILabel(text="Танчики",
+                        font_size=60,
+                        text_color=arcade.color.WHITE,
+                        width=300,
+                        align="center")
+        self.box_layout.add(label)
 
         # если нажать заработает метод start_game_click
         start_game_button = UITextureButton(text='Начать игру',
@@ -62,10 +79,46 @@ class MenuView(arcade.View):
         exit_button.on_click = self.exit_click
         self.box_layout.add(exit_button)
 
+        color_row = UIBoxLayout(vertical=False, space_between=10)
+
+        red_button = UITextureButton(text="", width=60, height=50,
+                                     texture=get_color_tex(arcade.color.RED),
+                                     texture_hovered=get_color_tex(arcade.color.DARK_RED))
+        red_button.on_click = lambda event: (print("Выбрана красная кнопка"), self.start_game_click(event))
+        color_row.add(red_button)
+
+        blue_button = UITextureButton(text="", width=60, height=50,
+                                      texture=get_color_tex(arcade.color.BLUE),
+                                      texture_hovered=get_color_tex(arcade.color.DARK_BLUE))
+        blue_button.on_click = lambda event: (print("Выбрана синяя кнопка"), self.start_game_click(event))
+        color_row.add(blue_button)
+
+        green_button = UITextureButton(text="", width=60, height=50,
+                                       texture=get_color_tex(arcade.color.GREEN),
+                                       texture_hovered=get_color_tex(arcade.color.DARK_PASTEL_GREEN))
+        green_button.on_click = lambda event: (print("Выбрана зеленая кнопка"), self.start_game_click(event))
+        color_row.add(green_button)
+
+        yellow_button = UITextureButton(text="", width=60, height=50,
+                                        texture=get_color_tex(arcade.color.YELLOW),
+                                        texture_hovered=get_color_tex(arcade.color.GOLD))
+        yellow_button.on_click = lambda event: (print("Выбрана желтая кнопка"), self.start_game_click(event))
+        color_row.add(yellow_button)
+
+        self.box_layout.add(color_row)
+
+        dropdown = UIDropdown(
+            default=self.available_maps[0],
+            options=self.available_maps,
+            width=200,
+            height=30
+        )
+        self.box_layout.add(dropdown)
+
     # запускает игру
     def start_game_click(self, event):
-        # надо к main подключить
-        pass
+        self.game_view = GameView(self)
+        self.window.show_view(self.game_view)
 
     # выходит с игры
     def exit_click(self, event):
@@ -76,13 +129,10 @@ class MenuView(arcade.View):
         # подключить к БД
         pass
 
+    def on_key_press(self, symbol, modifiers):
+        if symbol == arcade.key.ESCAPE:
+            arcade.exit()
+
     def on_draw(self):
         self.clear()
-        self.batch.draw()
         self.manager.draw()
-
-
-window = arcade.Window(960, 960, "")
-menu_view = MenuView()
-window.show_view(menu_view)
-arcade.run()
