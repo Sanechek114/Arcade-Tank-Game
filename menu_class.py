@@ -1,8 +1,4 @@
 import arcade
-<<<<<<< HEAD
-from arcade.gui import (UITextureButton, UIManager, UIAnchorLayout, UIBoxLayout, UILabel)
-from game_view import GameView
-=======
 from arcade.gui import (UITextureButton, UIManager, UIAnchorLayout, UIBoxLayout, UILabel, UIDropdown)
 
 from game_view import GameView
@@ -11,7 +7,6 @@ from game_view import GameView
 # это для цвета кнопок если что
 def get_color_tex(color):
     return arcade.make_soft_square_texture(60, color, outer_alpha=255)
->>>>>>> game_menu
 
 
 class MenuView(arcade.View):
