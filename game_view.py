@@ -16,7 +16,7 @@ class GameView(arcade.View):
         self.world_width = SCREEN_WIDTH
         self.world_height = SCREEN_HEIGHT
         # карта
-        self.tile_map = arcade.load_tilemap("assets/tank_map_1.tmx", SCALE)
+        self.tile_map = arcade.load_tilemap("assets/tank_map_2.tmx", SCALE)
         self.scene = self.tile_map.sprite_lists['grass']
         self.static = self.tile_map.sprite_lists['statics']
         self.trees = self.tile_map.sprite_lists['trees']

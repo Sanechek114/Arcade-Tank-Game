@@ -150,17 +150,17 @@
  </objectgroup>
  <objectgroup id="9" name="statics">
   <object id="99" gid="136" x="514" y="625" width="28" height="28"/>
-  <object id="100" gid="136" x="551" y="625" width="28" height="28"/>
-  <object id="101" gid="136" x="592" y="624" width="28" height="28"/>
-  <object id="102" gid="136" x="649" y="620" width="28" height="28"/>
-  <object id="103" gid="136" x="621" y="623" width="28" height="28"/>
-  <object id="104" gid="136" x="692" y="622" width="28" height="28"/>
-  <object id="105" gid="136" x="752" y="622" width="28" height="28"/>
-  <object id="106" gid="136" x="820" y="622" width="28" height="28"/>
-  <object id="107" gid="136" x="890" y="622" width="28" height="28"/>
-  <object id="108" gid="136" x="994" y="620" width="28" height="28"/>
+  <object id="100" gid="136" x="564" y="625" width="28" height="28"/>
+  <object id="101" gid="136" x="614" y="625" width="28" height="28"/>
+  <object id="102" gid="136" x="664" y="621" width="28" height="28"/>
+  <object id="103" gid="136" x="836" y="622" width="28" height="28"/>
+  <object id="104" gid="136" x="709" y="622" width="28" height="28"/>
+  <object id="105" gid="136" x="747" y="622" width="28" height="28"/>
+  <object id="106" gid="136" x="878" y="618" width="28" height="28"/>
+  <object id="107" gid="136" x="917" y="618" width="28" height="28"/>
+  <object id="108" gid="136" x="1009" y="619" width="28" height="28"/>
   <object id="109" gid="136" x="1055" y="619" width="28" height="28"/>
-  <object id="110" gid="136" x="944" y="620" width="28" height="28"/>
+  <object id="110" gid="136" x="965" y="620" width="28" height="28"/>
   <object id="111" gid="136" x="272.093" y="629.524" width="28" height="28" rotation="348.426"/>
   <object id="112" gid="136" x="427.345" y="632.164" width="28" height="28" rotation="353.488"/>
   <object id="113" gid="136" x="359.993" y="630.084" width="28" height="28" rotation="345.36"/>

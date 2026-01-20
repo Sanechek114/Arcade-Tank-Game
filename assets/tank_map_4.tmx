@@ -143,20 +143,20 @@
   <object id="265" gid="136" x="737" y="163" width="28" height="28"/>
   <object id="266" gid="136" x="678" y="195" width="28" height="28"/>
   <object id="267" gid="157" x="817" y="736" width="17" height="70"/>
-  <object id="214" gid="128" x="386" y="469" width="28" height="20"/>
-  <object id="215" gid="128" x="426" y="509" width="28" height="20"/>
+  <object id="214" gid="128" x="403.214" y="470.619" width="20" height="28" rotation="299.671"/>
+  <object id="215" gid="128" x="426" y="509" width="20" height="28"/>
   <object id="216" gid="128" x="260.022" y="727.783" width="28" height="20" rotation="26.2286"/>
   <object id="217" gid="128" x="327.154" y="764.312" width="28" height="20" rotation="332.669"/>
-  <object id="218" gid="128" x="578" y="219" width="28" height="20"/>
-  <object id="219" gid="128" x="639" y="259" width="28" height="20"/>
+  <object id="218" gid="128" x="586.294" y="197.136" width="22.5628" height="31.5333" rotation="113.741"/>
+  <object id="219" gid="128" x="642.605" y="239.974" width="23.4614" height="32.4673" rotation="87.5535"/>
   <object id="220" gid="128" x="884" y="655" width="28" height="20"/>
   <object id="221" gid="128" x="956" y="707" width="28" height="20"/>
   <object id="222" gid="129" x="554" y="210" width="24" height="24"/>
   <object id="223" gid="129" x="614" y="260" width="24" height="24"/>
   <object id="224" gid="129" x="401" y="511" width="24" height="24"/>
   <object id="225" gid="129" x="287" y="722" width="24" height="24"/>
-  <object id="226" gid="130" x="708" y="85" width="28" height="20"/>
-  <object id="227" gid="130" x="738" y="87" width="28" height="20"/>
+  <object id="226" gid="130" x="705.146" y="64.8063" width="20.9994" height="30.0075" rotation="90.971"/>
+  <object id="227" gid="130" x="740.811" y="64.2829" width="20.9576" height="33.4857" rotation="91.2637"/>
   <object id="228" gid="131" x="706.75" y="112" width="24" height="24"/>
   <object id="229" gid="131" x="806.25" y="87.75" width="24" height="24"/>
   <object id="230" gid="131" x="806.25" y="113.5" width="24" height="24"/>
@@ -191,7 +191,7 @@
   <object id="289" gid="146" x="717" y="663" width="32" height="22"/>
   <object id="290" gid="147" x="754.519" y="640.082" width="42" height="28" rotation="262.807"/>
  </objectgroup>
- <objectgroup id="9" name="static">
+ <objectgroup id="9" name="statics">
   <object id="326" gid="136" x="14" y="184.667" width="28" height="28"/>
   <object id="327" gid="136" x="42" y="160.667" width="28" height="28"/>
   <object id="328" gid="136" x="64.6667" y="131.333" width="28" height="28"/>

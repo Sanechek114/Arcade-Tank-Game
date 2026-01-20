@@ -102,12 +102,9 @@ class Player(arcade.SpriteList):
                              RELOUDTIME, LIVES // 2, MAX_SPEED * 2)}
 
         self.modification = modifications[color]
-        self.turret_path = f"assets/sprites/barrels/tank{
-            color.capitalize()}_barrel{turret_id}.png"
-        self.hull_path = f"assets/sprites/bodyes/tankBody_{
-            color}_outline.png"
-        self.bullet_path = f"assets/sprites/bullets/bullet{
-            color.capitalize()}{turret_id}_outline.png"
+        self.turret_path = f"assets/sprites/barrels/tank{color.capitalize()}_barrel{turret_id}.png"
+        self.hull_path = f"assets/sprites/bodyes/tankBody_{color}_outline.png"
+        self.bullet_path = f"assets/sprites/bullets/bullet{color.capitalize()}{turret_id}_outline.png"
 
         self.hull = Tank_hull(self.hull_path)
         self.turret = Tank_turret(self.turret_path, self.bullet_path, bullets, self.hull)

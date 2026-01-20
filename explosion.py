@@ -20,4 +20,5 @@ class Explosion(arcade.Sprite):
             self.texture_id = (self.texture_id + 1) % 5
             self.texture = self.textures[self.texture_id]
         if self.texture_id == 0:
+            print('remove')
             self.exp_list.remove(self)
