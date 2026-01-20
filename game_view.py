@@ -5,6 +5,7 @@ from tank import Player
 from explosion import Explosion
 from pause_class import PauseView
 from enemy_class import Enemy
+import time
 
 
 class GameView(arcade.View):
@@ -40,7 +41,7 @@ class GameView(arcade.View):
 
         self.player = Player('blue', 2, self.bullets, self.explosions)
 
-        self.enemy = Enemy(self.player.hull, self.bullets, self.ai_walls)
+        self.enemy = Enemy(1, self.player.hull, self.bullets, self.ai_walls)
         self.enemies = []
         self.enemies.append(self.enemy)
 
@@ -57,6 +58,7 @@ class GameView(arcade.View):
 
         self.enemy_to_player_colis = arcade.PhysicsEngineSimple(
             self.player.hull, self.enemies_hulls)
+        time.sleep(1)
 
     def on_draw(self):
         self.clear()
@@ -79,7 +81,7 @@ class GameView(arcade.View):
 
         self.player.update(delta_time, control)
         for enemy in self.enemies:
-            enemy.update(delta_time, self.enemies, self.explosions)
+            enemy.update(delta_time, self.enemies, self.enemies_hulls, self.explosions)
 
         colliding = self.enemy_to_player_colis.update()
         colliding += self.collision.update()
@@ -95,7 +97,8 @@ class GameView(arcade.View):
         if bullets:
             for bullet in bullets:
                 if not bullet.player:
-                    self.player.lives -= 1
+                    self.player.lives -= bullet.damage
+                    print(bullet.damage)
                     self.bullets.remove(bullet)
                     if self.player.lives == 0:
                         self.explosions.append(
@@ -104,6 +107,11 @@ class GameView(arcade.View):
         for bullet in self.bullets:
             broken = arcade.check_for_collision_with_list(
                 bullet, self.breaking, 3)
+            static = arcade.check_for_collision_with_list(
+                bullet, self.static, 3)
+            enemies_hulls = arcade.check_for_collision_with_list(
+                bullet, self.enemies_hulls, 3)
+
             if broken:
                 self.bullets.remove(bullet)
                 for elem in broken:
@@ -111,18 +119,19 @@ class GameView(arcade.View):
                     self.ai_walls.remove(elem)
                     self.walls.remove(elem)
 
-        for bullet in self.bullets:
-            enemies = arcade.check_for_collision_with_list(
-                bullet, self.enemies_hulls, 3)
-
-            if enemies and bullet.player:
+            elif enemies_hulls and bullet.player:
+                print(bullet.damage)
                 self.bullets.remove(bullet)
-                for enemy in enemies:
-                    enemy.lives -= 1
+                for hull in enemies_hulls:
+                    hull.lives -= bullet.damage
+
+            elif static:
+                self.bullets.remove(bullet)
 
     def draw_reloding_lives(self):
+        lives, reloudtime, reloudtimer = self.player.get_lives_relouding()
         try:
-            dx = (RELOUDTIME - self.player.turret.reloudtimer) / RELOUDTIME
+            dx = (reloudtime - reloudtimer) / reloudtime
         except ZeroDivisionError:
             dx = 0
         x, y = self.world_camera.position
@@ -132,7 +141,7 @@ class GameView(arcade.View):
         arcade.draw_lbwh_rectangle_filled(
             x + self.width * 0.15, y - self.height * 0.45,
             -self.width * 0.3 * (1 - dx), SCALE * 4, arcade.color.RED)
-        for n in range(self.player.lives):
+        for n in range(lives):
             arcade.draw_lbwh_rectangle_filled(
                 x - self.width * 0.14 + n * 0.1 * self.width,
                 y - self.height * 0.43,

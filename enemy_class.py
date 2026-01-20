@@ -45,8 +45,6 @@ class Tank_hull(arcade.Sprite):
         if 360 > abs((self.target_angle - self.angle + 360) % 360) > 180:
             self.angle -= HULLROTATIONSPEED / 1.5 * delta_time
         if not self.on_point:
-            print('Move')
-            print(abs(self.target_angle - self.angle) % 360)
             self.change_x = self.speed * math.sin(
                 math.radians(self.angle + 180)) * delta_time
             self.change_y = self.speed * math.cos(
@@ -108,22 +106,26 @@ class Tank_turret(arcade.Sprite):
             angle = self.angle
             Bx, By = (x + -SCALE * 10 * math.sin(math.radians(angle)),
                       y + -SCALE * 10 * math.cos(math.radians(angle)))
-            newBullet = Bullet(self.bullet_path, Bx, By, angle, self.bullets)
+            newBullet = Bullet(self.bullet_path, Bx, By, angle - 180, 1, 1, self.bullets)
             self.bullets.append(newBullet)
 
 
 class Enemy(arcade.SpriteList):
-    def __init__(self, player, bullets, walls):
+    def __init__(self, enemy_id,  player, bullets, walls):
         super().__init__()
         self.player = player
         self.bullets = bullets
+        # id: (lives, damage, bullet speed, 
+        enemy_types = {}
+
         self.walls = walls
         self.hull = Tank_hull(player)
         self.turret = Tank_turret(player, bullets)
+        
         self.append(self.hull)
         self.append(self.turret)
 
-    def update(self, delta_time, enemies, explosions):
+    def update(self, delta_time, enemies, enemies_hulls, explosions):
         self.player_in_sight = arcade.has_line_of_sight(
             self.player.position,
             self.hull.position,
@@ -132,6 +134,8 @@ class Enemy(arcade.SpriteList):
         self.hull.update(delta_time, self.player_in_sight)
         self.turret.update(delta_time, self.hull,
                            self.player_in_sight)
-        if self.hull.lives == 0:
+        if self.hull.lives <= 0:
+            print()
             explosions.append(Explosion(*self.hull.position, explosions))
             enemies.remove(self)
+            enemies_hulls.remove(self.hull)
