@@ -101,11 +101,11 @@ class Player(arcade.SpriteList):
         modifications = {'red': (
                              RELOUDTIME, LIVES, MAX_SPEED),
                          'blue': (
-                             RELOUDTIME // 2, LIVES, MAX_SPEED // 2),
+                             RELOUDTIME // 1.5, LIVES, MAX_SPEED // 2),
                          'green': (
-                             RELOUDTIME * 2, LIVES * 2, MAX_SPEED),
+                             RELOUDTIME * 1.5, LIVES * 2, MAX_SPEED),
                          'sand': (
-                             RELOUDTIME, LIVES // 2, MAX_SPEED * 2)}
+                             RELOUDTIME, LIVES // 2, MAX_SPEED * 1.5)}
 
         reloudtime, self.lives, max_speed = modifications[color]
         self.turret_path = f"assets/sprites/barrels/tank{color.capitalize()}_barrel{turret_id}.png"

@@ -4,7 +4,7 @@ from config import (SCALE, SCREEN_HEIGHT, SCREEN_WIDTH, RELOUDTIME,
 from tank import Player
 from explosion import Explosion
 from pause_class import PauseView
-from enemy_class import Enemy
+from enemy_class import Enemy, Boss
 import time
 
 
@@ -17,7 +17,7 @@ class GameView(arcade.View):
         self.world_width = SCREEN_WIDTH
         self.world_height = SCREEN_HEIGHT
         # карта
-        self.tile_map = arcade.load_tilemap("assets/tank_map_2.tmx", SCALE)
+        self.tile_map = arcade.load_tilemap("assets/tank_map_1.tmx", SCALE)
         self.scene = self.tile_map.sprite_lists['grass']
         self.static = self.tile_map.sprite_lists['statics']
         self.trees = self.tile_map.sprite_lists['trees']
@@ -39,25 +39,29 @@ class GameView(arcade.View):
         self.right = False
         self.fire = False
 
-        self.player = Player('blue', 2, self.bullets, self.explosions)
-
-        self.enemy = Enemy(1, self.player.hull, self.bullets, self.ai_walls)
-        self.enemies = []
-        self.enemies.append(self.enemy)
-
         self.walls = arcade.SpriteList(True)
         self.walls.extend(self.static)
         self.walls.extend(self.breaking)
+
+        self.player = Player('blue', 3, self.bullets, self.explosions)
+
+        self.enemy = Boss(self.player.hull, self.bullets, self.ai_walls)
+        self.enemy.collision = arcade.PhysicsEngineSimple(
+            self.enemy.hull, self.walls)
+        self.enemies = []
+        self.enemies.append(self.enemy)
 
         self.collision = arcade.PhysicsEngineSimple(
             self.player.hull, self.walls)
 
         self.enemies_hulls = arcade.SpriteList()
+        self.enemies_hulls_collision = []
         for enemy in self.enemies:
             self.enemies_hulls.append(enemy.hull)
 
         self.enemy_to_player_colis = arcade.PhysicsEngineSimple(
             self.player.hull, self.enemies_hulls)
+
         time.sleep(1)
 
     def on_draw(self):
@@ -82,6 +86,7 @@ class GameView(arcade.View):
         self.player.update(delta_time, control)
         for enemy in self.enemies:
             enemy.update(delta_time, self.enemies, self.enemies_hulls, self.explosions)
+            enemy.collision.update()
 
         colliding = self.enemy_to_player_colis.update()
         colliding += self.collision.update()
@@ -100,7 +105,7 @@ class GameView(arcade.View):
                     self.player.lives -= bullet.damage
                     print(bullet.damage)
                     self.bullets.remove(bullet)
-                    if self.player.lives == 0:
+                    if self.player.lives <= 0:
                         self.explosions.append(
                             Explosion(*self.player.hull.position,
                                       self.explosions))
@@ -126,7 +131,7 @@ class GameView(arcade.View):
                     hull.lives -= bullet.damage
 
             elif static:
-                self.bullets.remove(bullet)
+                self.bullets.remove(bullet)   
 
     def draw_reloding_lives(self):
         lives, reloudtime, reloudtimer = self.player.get_lives_relouding()
@@ -170,9 +175,6 @@ class GameView(arcade.View):
         if key == arcade.key.ESCAPE:
             pause_view = PauseView(self, self.menu)
             self.window.show_view(pause_view)
-        if key == arcade.key.J:
-            x, y = 0, 0
-            self.explosions.append(Explosion(x, y, self.explosions))
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.W:
