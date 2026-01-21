@@ -9,7 +9,7 @@ import time
 
 
 class GameView(arcade.View):
-    def __init__(self, menu):
+    def __init__(self, menu, color, map):
         super().__init__()
         self.menu = menu
         self.background_color = arcade.color.SKY_BLUE
@@ -17,7 +17,7 @@ class GameView(arcade.View):
         self.world_width = SCREEN_WIDTH
         self.world_height = SCREEN_HEIGHT
         # карта
-        self.tile_map = arcade.load_tilemap("assets/tank_map_1.tmx", SCALE)
+        self.tile_map = arcade.load_tilemap(f"assets/tank_map_{map}.tmx", SCALE)
         self.scene = self.tile_map.sprite_lists['grass']
         self.static = self.tile_map.sprite_lists['statics']
         self.trees = self.tile_map.sprite_lists['trees']
@@ -43,7 +43,7 @@ class GameView(arcade.View):
         self.walls.extend(self.static)
         self.walls.extend(self.breaking)
 
-        self.player = Player('blue', 3, self.bullets, self.explosions)
+        self.player = Player(color, 3, self.bullets, self.explosions)
 
         self.enemy = Boss(self.player.hull, self.bullets, self.ai_walls)
         self.enemy.collision = arcade.PhysicsEngineSimple(

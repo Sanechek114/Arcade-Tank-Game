@@ -110,7 +110,7 @@ class MenuView(arcade.View):
         self.box_layout.add(exit_button)
 
     def start_game_click(self, event, color='red'):
-        select_map = self.dropdown.value
+        select_map = self.all_maps.index(self.dropdown.value) + 1
         self.game_view = GameView(self, color, select_map)
         self.window.show_view(self.game_view)
 
