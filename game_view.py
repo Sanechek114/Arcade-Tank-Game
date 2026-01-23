@@ -1,4 +1,5 @@
 import arcade
+from random import randint, choice
 from config import (SCALE, SCREEN_HEIGHT, SCREEN_WIDTH, RELOUDTIME,
                     CAMERA_LERP)
 from tank import Player
@@ -14,7 +15,7 @@ class GameView(arcade.View):
     def __init__(self, menu, color, map):
         super().__init__()
         self.menu = menu
-        self.background_color = arcade.color.SKY_BLUE
+        self.background_color = (57, 194, 114)
         self.world_camera = arcade.camera.Camera2D()
         self.world_width = SCREEN_WIDTH
         self.world_height = SCREEN_HEIGHT
@@ -50,7 +51,7 @@ class GameView(arcade.View):
 
         self.player = Player(color, 3, self.bullets, self.explosions)
 
-        self.enemy = Boss(self.player.hull, self.bullets, self.ai_walls)
+        self.enemy = Boss(self.player.hull, self.bullets)
         self.enemy.collision = arcade.PhysicsEngineSimple(
             self.enemy.hull, self.walls)
         self.enemies = []
@@ -87,24 +88,43 @@ class GameView(arcade.View):
     def on_update(self, delta_time):
         control = (self.forward, self.backward,
                    self.right, self.left, self.fire, self.mouseXY)
-    
+
         if not self.game_over:
             self.player.update(delta_time, control)
-        if self.player.lives <= 0:
-            self.game_over = True
-            self.player.hull.changex = 0
-            self.player.hull.changey = 0
-            arcade.schedule_once(self.open_game_over, 5)
+            if self.player.lives <= 0:
+                self.game_over = True
+                self.player.hull.change_x = 0
+                self.player.hull.change_y = 0
+                self.player.hull.speed = 0
+                arcade.schedule_once(self.open_game_over, 2)
+        if len(self.enemies) == 0:
+            arcade.schedule_once(self.open_game_win, 2)
 
+        #  Обновление врагов
+        
         for enemy in self.enemies:
-            enemy.update(delta_time, self.enemies, self.enemies_hulls, self.explosions)
+            enemy.update(delta_time, self.enemies, self.enemies_hulls, self.explosions, self.ai_walls)
             enemy.collision.update()
+            trees = (arcade.check_for_collision_with_list(enemy.hull, self.trees))  # Проверка коллизия ботов и деревьев
 
-        colliding = self.enemy_to_player_colis.update()
-        colliding += self.collision.update()
+        trees += (arcade.check_for_collision_with_list(self.player.hull, self.trees))  # Проверка коллизия игрока и деревьев
+
+        for tree in trees:
+            x, y = tree.position
+            for _ in range(3):
+                tx, ty = x + randint(-30, 30) * SCALE, y + randint(-30, 30) * SCALE
+                self.decorations.append(arcade.Sprite(
+                    choice(['assets/objects/treeGreen_twigs.png',
+                            'assets/objects/treeBrown_twigs.png']),
+                    SCALE, tx, ty, randint(1, 360)))  # Спавн 3 веток рядом с разрушеным деревом
+            self.trees.remove(tree)  # Удаление дерева
+            self.ai_walls.remove(tree)
+
+        colliding = self.enemy_to_player_colis.update()  # Обновление коллизии игрока и ботов
+        colliding += self.collision.update()  # Обновление коллизии игрока и стен
 
         if len(colliding):
-            self.player.hull.speed = 0
+            self.player.hull.speed = 0  # Остоновка игрока при столкновениях
 
         self.bullets.update(delta_time)
         self.explosions.update(delta_time)
@@ -140,6 +160,7 @@ class GameView(arcade.View):
                 print(bullet.damage)
                 self.bullets.remove(bullet)
                 for hull in enemies_hulls:
+                    hull.next_point(True)
                     hull.lives -= bullet.damage
 
             elif static:
@@ -163,11 +184,11 @@ class GameView(arcade.View):
                 x - self.width * 0.14 + n * 0.1 * self.width,
                 y - self.height * 0.43,
                 self.width * 0.08, SCALE * 4, arcade.color.RED)
-    
-    def open_game_over(self):
+
+    def open_game_over(self, event):
         self.window.show_view(GameOverView(self, self.menu))
-    
-    def open_game_win(self):
+
+    def open_game_win(self, event):
         self.window.show_view(WinView(self, self.menu))
 
     def world_camera_update(self):

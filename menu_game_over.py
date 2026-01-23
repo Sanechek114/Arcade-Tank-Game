@@ -1,5 +1,6 @@
 
 import arcade
+from config import SCALE
 from arcade.gui import (UIManager, UIAnchorLayout, UIBoxLayout, UILabel)
 
 
@@ -46,7 +47,7 @@ class GameOverView(arcade.View):
     def on_draw(self):
         self.clear()
         self.game_view.on_draw()
-        arcade.draw_text(self.text, 100, 300, arcade.color.RED_DEVIL, 20)
+        arcade.draw_text(self.text, self.game_view.world_camera.position[0], self.game_view.world_camera.position[1] + SCALE * 100, arcade.color.RED_DEVIL,40)
         self.manager.draw()
 
     def on_key_press(self, key, modifiers):
