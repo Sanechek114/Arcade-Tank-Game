@@ -5,6 +5,8 @@ from tank import Player
 from explosion import Explosion
 from pause_class import PauseView
 from enemy_class import Enemy, Boss
+from menu_game_over import GameOverView
+from menu_win import WinView
 import time
 
 
@@ -17,7 +19,8 @@ class GameView(arcade.View):
         self.world_width = SCREEN_WIDTH
         self.world_height = SCREEN_HEIGHT
         # карта
-        self.tile_map = arcade.load_tilemap(f"assets/tank_map_{map}.tmx", SCALE)
+        self.tile_map = arcade.load_tilemap(
+            f"assets/tank_map_{map}.tmx", SCALE, use_spatial_hash=True)
         self.scene = self.tile_map.sprite_lists['grass']
         self.static = self.tile_map.sprite_lists['statics']
         self.trees = self.tile_map.sprite_lists['trees']
@@ -38,6 +41,8 @@ class GameView(arcade.View):
         self.left = False
         self.right = False
         self.fire = False
+
+        self.game_over = False
 
         self.walls = arcade.SpriteList(True)
         self.walls.extend(self.static)
@@ -82,8 +87,15 @@ class GameView(arcade.View):
     def on_update(self, delta_time):
         control = (self.forward, self.backward,
                    self.right, self.left, self.fire, self.mouseXY)
+    
+        if not self.game_over:
+            self.player.update(delta_time, control)
+        if self.player.lives <= 0:
+            self.game_over = True
+            self.player.hull.changex = 0
+            self.player.hull.changey = 0
+            arcade.schedule_once(self.open_game_over, 5)
 
-        self.player.update(delta_time, control)
         for enemy in self.enemies:
             enemy.update(delta_time, self.enemies, self.enemies_hulls, self.explosions)
             enemy.collision.update()
@@ -151,6 +163,12 @@ class GameView(arcade.View):
                 x - self.width * 0.14 + n * 0.1 * self.width,
                 y - self.height * 0.43,
                 self.width * 0.08, SCALE * 4, arcade.color.RED)
+    
+    def open_game_over(self):
+        self.window.show_view(GameOverView(self, self.menu))
+    
+    def open_game_win(self):
+        self.window.show_view(WinView(self, self.menu))
 
     def world_camera_update(self):
         position = (
@@ -185,6 +203,9 @@ class GameView(arcade.View):
             self.left = False
         if key == arcade.key.D:
             self.right = False
+    
+    def on_close(self):
+        arcade.unschedule(self.open_game_over)
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.mouseXY = (x, y)
