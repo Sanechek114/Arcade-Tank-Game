@@ -51,7 +51,7 @@ class GameView(arcade.View):
 
         self.player = Player(color, 3, self.bullets, self.explosions)
 
-        self.enemy = Boss(self.player.hull, self.bullets)
+        self.enemy = Enemy(3, self.player.hull, self.bullets)
         self.enemy.collision = arcade.PhysicsEngineSimple(
             self.enemy.hull, self.walls)
         self.enemies = []
@@ -101,11 +101,11 @@ class GameView(arcade.View):
             arcade.schedule_once(self.open_game_win, 2)
 
         #  Обновление врагов
-        
+        trees = []
         for enemy in self.enemies:
             enemy.update(delta_time, self.enemies, self.enemies_hulls, self.explosions, self.ai_walls)
             enemy.collision.update()
-            trees = (arcade.check_for_collision_with_list(enemy.hull, self.trees))  # Проверка коллизия ботов и деревьев
+            trees += (arcade.check_for_collision_with_list(enemy.hull, self.trees))  # Проверка коллизия ботов и деревьев
 
         trees += (arcade.check_for_collision_with_list(self.player.hull, self.trees))  # Проверка коллизия игрока и деревьев
 

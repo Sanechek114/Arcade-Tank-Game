@@ -19,14 +19,10 @@ class Tank_hull(arcade.Sprite):
     def next_point(self, player_in_sight):
         Hx, Hy = self.position
         if player_in_sight:
-            Px, Py = self.player.position
-            Hx, Hy = self.position
-            atan = math.atan2((-Px + Hx),
-                              (-Py + Hy))
-            if atan < 0:
-                atan += 2 * math.pi
-            self.target_angle = math.degrees(atan) % 360
             self.player_point = self.player.position
+        atan = math.atan2((-self.player_point[0] + Hx),
+                          (-self.player_point[1] + Hy))
+        self.target_angle = math.degrees(atan) % 360
         self.on_point = math.sqrt(
             (self.player_point[0] - Hx) ** 2 + \
             (self.player_point[1] - Hy) ** 2) < 100 * SCALE
@@ -54,7 +50,7 @@ class Tank_hull(arcade.Sprite):
 
 class Tank_turret(arcade.Sprite):
     def __init__(self, path, bullet_path, player, bullets, bullet_speed_coef, bullet_damage):
-        super().__init__(path, center_x=465, center_y=465, scale=SCALE)
+        super().__init__(path, center_x=200, center_y=800, scale=SCALE)
         self.shoot_sound = arcade.load_sound("assets/sounds/awp.mp3")
         self.reloudtime = RELOUDTIME
         self.bullet_path = bullet_path
@@ -73,15 +69,9 @@ class Tank_turret(arcade.Sprite):
         Hx, Hy = hull.position
         if player_in_sight:
             Px, Py = self.player.position
-            print(Px, Py)
-            print(arcade.get_distance_between_sprites(self.player, hull))
             time = arcade.get_distance_between_sprites(self.player, hull) / (
                 self.bullet_speed_coef * BULLET_SPEED)
-            print(time)
             Px, Py = Px + self.player.change_x * time * 100, Py + self.player.change_y * time * 100
-            print(Px, Py)
-            print('-----------------')
-
             atan = math.atan2(-Px + Hx, -Py + Hy)
             if atan < 0:
                 atan += 2 * math.pi
@@ -190,7 +180,7 @@ class Boss(arcade.SpriteList):
         self.player_in_sight = arcade.has_line_of_sight(
             self.player.position,
             self.hull.position,
-            walls, ENEMY_VIEW * 1.3,
+            walls, ENEMY_VIEW * 3,
             1)
         self.hull.update(delta_time, self.player_in_sight)
         self.turret1.update(delta_time, self.hull,
