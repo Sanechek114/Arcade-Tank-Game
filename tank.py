@@ -42,7 +42,7 @@ class Tank_turret(arcade.Sprite):
     def __init__(self, path, bullet_path, bullets, hull, reloudtime, turret_id):
         super().__init__(path, center_x=465 - 16 * 4, center_y=465, scale=SCALE)
         self.bullet_path = bullet_path
-        self.shoot_sound = arcade.load_sound("assets/sounds/shoot.mp3")
+        self.shoot_sound = arcade.load_sound("assets/sounds/shoot.wav")
         self.bullets = bullets
         self.hull = hull
         bullet_modifers = {1: (1, 1),
