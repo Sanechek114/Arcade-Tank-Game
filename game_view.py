@@ -49,7 +49,7 @@ class GameView(arcade.View):
         self.walls.extend(self.static)
         self.walls.extend(self.breaking)
 
-        self.player = Player(color, turret, self.bullets, self.explosions, self.walls)
+        self.player = Player(color, turret, 1.5, self.bullets, self.walls)
 
         self.enemy = Enemy(1, self.player.hull, self.bullets)
         self.enemy.collision = arcade.PhysicsEngineSimple(
@@ -143,11 +143,11 @@ class GameView(arcade.View):
                                       self.explosions))
         for bullet in self.bullets:
             broken = arcade.check_for_collision_with_list(
-                bullet, self.breaking, 3)
+                bullet, self.breaking)
             static = arcade.check_for_collision_with_list(
-                bullet, self.static, 3)
+                bullet, self.static)
             enemies_hulls = arcade.check_for_collision_with_list(
-                bullet, self.enemies_hulls, 3)
+                bullet, self.enemies_hulls)
 
             if broken:
                 self.bullets.remove(bullet)
