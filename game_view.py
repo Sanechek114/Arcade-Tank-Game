@@ -12,7 +12,7 @@ import time
 
 
 class GameView(arcade.View):
-    def __init__(self, menu, color, map):
+    def __init__(self, menu, color, turret, map):
         super().__init__()
         self.menu = menu
         self.background_color = (57, 194, 114)
@@ -49,9 +49,9 @@ class GameView(arcade.View):
         self.walls.extend(self.static)
         self.walls.extend(self.breaking)
 
-        self.player = Player(color, 3, self.bullets, self.explosions)
+        self.player = Player(color, turret, self.bullets, self.explosions, self.walls)
 
-        self.enemy = Enemy(3, self.player.hull, self.bullets)
+        self.enemy = Enemy(1, self.player.hull, self.bullets)
         self.enemy.collision = arcade.PhysicsEngineSimple(
             self.enemy.hull, self.walls)
         self.enemies = []
@@ -164,7 +164,7 @@ class GameView(arcade.View):
                     hull.lives -= bullet.damage
 
             elif static:
-                self.bullets.remove(bullet)   
+                self.bullets.remove(bullet)
 
     def draw_reloding_lives(self):
         lives, reloudtime, reloudtimer = self.player.get_lives_relouding()

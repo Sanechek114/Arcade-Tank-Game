@@ -1,5 +1,5 @@
 import arcade
-from config import (SCALE, SCREEN_WIDTH, SCREEN_HEIGHT, LIVES,
+from config import (SCALE, SCREEN_WIDTH, SCREEN_HEIGHT, LIVES, LIVES_COEF,
                     MAX_SPEED,
                     HULLROTATIONSPEED, TURRETROTATIONSPEED, RELOUDTIME)
 import math
@@ -8,7 +8,7 @@ from bullet_class import Bullet
 
 class Tank_hull(arcade.Sprite):
     def __init__(self, path, max_speed):
-        super().__init__(path, center_x=100, center_y=200, scale=SCALE)
+        super().__init__(path, center_x=100, center_y=200, scale=SCALE, angle=180)
         self.max_speed = max_speed
         self.speed = 0
 
@@ -91,7 +91,7 @@ class Tank_turret(arcade.Sprite):
 
 
 class Player(arcade.SpriteList):
-    def __init__(self, color, turret_id, bullets, walls):
+    def __init__(self, color, turret_id, lives_, bullets, walls):
         super().__init__()
         self.bullets = bullets
         self.walls = walls
@@ -104,7 +104,7 @@ class Player(arcade.SpriteList):
                              RELOUDTIME // 1.5, LIVES, MAX_SPEED // 2),
                          'green': (
                              RELOUDTIME * 1.5, LIVES * 2, MAX_SPEED),
-                         'sand': (
+                         'yellow': (
                              RELOUDTIME, LIVES // 2, MAX_SPEED * 1.5)}
 
         reloudtime, self.lives, max_speed = modifications[color]

@@ -132,16 +132,9 @@
   <object id="254" gid="143" x="750" y="139" width="52" height="16"/>
   <object id="255" gid="143" x="677.375" y="114.548" width="52" height="16" rotation="70.3118"/>
   <object id="256" gid="143" x="682.875" y="58.0626" width="52" height="16" rotation="99.0912"/>
-  <object id="257" gid="136" x="511" y="262.667" width="28" height="28"/>
   <object id="258" gid="137" x="242.667" y="102.667" width="28" height="28"/>
   <object id="259" gid="137" x="292.667" y="89.3333" width="28" height="28"/>
-  <object id="260" gid="137" x="329" y="518" width="28" height="28"/>
-  <object id="261" gid="137" x="353" y="488" width="28" height="28"/>
   <object id="262" gid="137" x="1097" y="680" width="28" height="28"/>
-  <object id="263" gid="137" x="760" y="638" width="28" height="28"/>
-  <object id="264" gid="137" x="805" y="582" width="28" height="28"/>
-  <object id="265" gid="136" x="737" y="163" width="28" height="28"/>
-  <object id="266" gid="136" x="659" y="178" width="28" height="28"/>
   <object id="214" gid="128" x="403.214" y="470.619" width="20" height="28" rotation="299.671"/>
   <object id="215" gid="128" x="426" y="509" width="20" height="28"/>
   <object id="216" gid="128" x="259.355" y="729.116" width="20" height="28" rotation="26.2286"/>
@@ -188,7 +181,7 @@
   <object id="289" gid="146" x="717" y="663" width="32" height="22"/>
   <object id="290" gid="147" x="754.519" y="640.082" width="42" height="28" rotation="262.807"/>
  </objectgroup>
- <objectgroup id="10" name="decorations" visible="0">
+ <objectgroup id="10" name="decorations">
   <object id="295" gid="155" x="1133.19" y="495.566" width="26" height="22" rotation="251.742"/>
   <object id="296" gid="155" x="1025.67" y="430.333" width="26" height="22"/>
   <object id="297" gid="155" x="1097.67" y="242.333" width="26" height="22"/>
@@ -247,6 +240,13 @@
   <object id="342" gid="135" x="246.667" y="74.6667" width="24" height="24"/>
   <object id="343" gid="135" x="266.667" y="72" width="24" height="24"/>
   <object id="344" gid="135" x="285.333" y="54.6667" width="24" height="24"/>
+  <object id="257" gid="136" x="511" y="262.667" width="28" height="28"/>
+  <object id="260" gid="137" x="329" y="518" width="28" height="28"/>
+  <object id="261" gid="137" x="353" y="488" width="28" height="28"/>
+  <object id="263" gid="137" x="760" y="638" width="28" height="28"/>
+  <object id="264" gid="137" x="805" y="582" width="28" height="28"/>
+  <object id="265" gid="136" x="737" y="163" width="28" height="28"/>
+  <object id="266" gid="136" x="659" y="178" width="28" height="28"/>
  </objectgroup>
  <objectgroup id="8" name="trees">
   <object id="144" gid="153" x="102" y="157.667" width="64" height="64"/>

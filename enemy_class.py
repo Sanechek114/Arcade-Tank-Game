@@ -139,6 +139,7 @@ class Enemy(arcade.SpriteList):
             self.hull.position,
             walls, ENEMY_VIEW,
             10)
+        
         self.hull.update(delta_time, self.player_in_sight)
         self.turret.update(delta_time, self.hull,
                            self.player_in_sight)

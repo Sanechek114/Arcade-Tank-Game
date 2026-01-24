@@ -1,26 +1,41 @@
 import arcade
-from arcade.gui import (UITextureButton, UIManager, UIAnchorLayout, UIBoxLayout, UILabel, UIDropdown)
+import csv
+from arcade.gui import (UITextureButton, UIManager, UIAnchorLayout, UIBoxLayout, UILabel, UIDropdown, UITextureButtonStyle)
 
 from game_view import GameView
 
 
 # это для цвета кнопок если что
-def get_color_tex(color):
-    return arcade.make_soft_square_texture(60, color, outer_alpha=255)
+def get_color_tex(color, alpha=255):
+    return arcade.make_soft_square_texture(60, color, center_alpha=alpha, outer_alpha=alpha)
 
 
 class MenuView(arcade.View):
     def __init__(self):
         super().__init__()
-        self.background_color = arcade.color.DARK_GREEN
-
+        self.background_color = arcade.color.SMOKY_BLACK
         self.colors = ['red', 'blue', 'green', 'yellow']
         self.all_maps = ["1 карта", "2 карта", "3 карта", "4 карта"]
+        self.color = 'red'
 
-        with open("progress.txt", "r", encoding="utf8") as file:
-            self.count = int(file.read().strip())
+        self.data = {}
+        with open('progress.txt', 'r') as f:
+            for line in f:
+                if ':' in line:
+                    key, values = line.strip().split(': ')
+                    x, y = map(int, values.split(', '))
+                    self.data[key] = (x, y)
+        print(self.data)
+        self.turret = self.data[self.color][1]
 
-        self.available_maps = self.all_maps[:self.count]
+        font = arcade.load_font('assets/south_park.ttf')
+        self.customfont = 'South Park EXT'
+        self.style = {"normal": UITextureButton.UIStyle(font_name=self.customfont, font_size=20),
+                      "press": UITextureButton.UIStyle(font_name=self.customfont, font_size=20),
+                      "hover": UITextureButton.UIStyle(font_name=self.customfont, font_size=20),
+                      "pressed": UITextureButton.UIStyle(font_name=self.customfont, font_size=20)}
+
+        self.available_maps = self.all_maps[:self.data[self.color][0]]
 
         self.manager = UIManager()
         self.manager.enable()
@@ -41,78 +56,128 @@ class MenuView(arcade.View):
 
         label = UILabel(text="Танчики",
                         font_size=60,
+                        font_name=self.customfont,
                         text_color=arcade.color.WHITE,
                         width=300,
                         align="center")
         self.box_layout.add(label)
 
         start_game_button = UITextureButton(text='Начать игру',
+                                            style=self.style,
                                             texture=texture_normal,
                                             texture_hovered=texture_hovered,
                                             texture_pressed=texture_pressed,
-                                            scale=1.0,
+                                            scale=1.0
                                             )
-        start_game_button.on_click = lambda event: self.start_game_click(event, self.colors[0])
+                                            
+        start_game_button.on_click = lambda event: self.start_game_click(event)
         self.box_layout.add(start_game_button)
 
         records_button = UITextureButton(text='Рекорды',
+                                         style=self.style,
                                          texture=texture_normal,
                                          texture_hovered=texture_hovered,
                                          texture_pressed=texture_pressed,
-                                         scale=1.0,
+                                         scale=1.0
                                          )
         records_button.on_click = self.records_click
         self.box_layout.add(records_button)
 
+        # Кнопки выбора цвета
+
         color_row = UIBoxLayout(vertical=False, space_between=10)
 
-        red_button = UITextureButton(text="", width=60, height=50,
+        red_button = UITextureButton(text="", width=40, height=40,
                                      texture=get_color_tex(arcade.color.RED),
                                      texture_hovered=get_color_tex(arcade.color.DARK_RED))
-        red_button.on_click = lambda event: self.start_game_click(event, self.colors[0])
+        red_button.on_click = lambda event: self.change_color_click(event, self.colors[0])
         color_row.add(red_button)
 
-        blue_button = UITextureButton(text="", width=60, height=50,
+        blue_button = UITextureButton(text="", width=40, height=40,
                                       texture=get_color_tex(arcade.color.BLUE),
                                       texture_hovered=get_color_tex(arcade.color.DARK_BLUE))
-        blue_button.on_click = lambda event: self.start_game_click(event, self.colors[1])
+        blue_button.on_click = lambda event: self.change_color_click(event, self.colors[1])
         color_row.add(blue_button)
 
-        green_button = UITextureButton(text="", width=60, height=50,
+        green_button = UITextureButton(text="", width=40, height=40,
                                        texture=get_color_tex(arcade.color.GREEN),
-                                       texture_hovered=get_color_tex(arcade.color.DARK_PASTEL_GREEN))
-        green_button.on_click = lambda event: self.start_game_click(event, self.colors[2])
+                                       texture_hovered=get_color_tex(arcade.color.DARK_GREEN))
+        green_button.on_click = lambda event: self.change_color_click(event, self.colors[2])
         color_row.add(green_button)
 
-        yellow_button = UITextureButton(text="", width=60, height=50,
+        yellow_button = UITextureButton(text="", width=40, height=40,
                                         texture=get_color_tex(arcade.color.YELLOW),
-                                        texture_hovered=get_color_tex(arcade.color.GOLD))
-        yellow_button.on_click = lambda event: self.start_game_click(event, self.colors[3])
+                                        texture_hovered=get_color_tex(arcade.color.DARK_YELLOW))
+        yellow_button.on_click = lambda event: self.change_color_click(event, self.colors[3])
         color_row.add(yellow_button)
 
         self.box_layout.add(color_row)
 
+        # Кнопки выбора пушки
+
+        self.barel_row = UIBoxLayout(vertical=False, space_between=10)
+
+        for i in range(min(self.data[self.color][0], 3)):
+            barrel_button = UITextureButton(text="", scale=2,
+                                                texture=arcade.load_texture(f"assets/sprites/barrels/tank{self.color.capitalize()}_barrel1.png"))
+            barrel_button.on_click = lambda event: self.change_turret_click(event, i + 1)
+            self.barel_row.add(barrel_button)
+
+        self.box_layout.add(self.barel_row)
+
+        # Выбор карты
+
         self.dropdown = UIDropdown(
             default=self.available_maps[0],
             options=self.available_maps,
-            width=200,
+            width=190,
             height=30
         )
         self.box_layout.add(self.dropdown)
 
-        exit_button = UITextureButton(text='Выход',
+        self.exit_button = UITextureButton(text='Выход',
+                                      style=self.style,
                                       texture=texture_normal,
                                       texture_hovered=texture_hovered,
                                       texture_pressed=texture_pressed,
                                       scale=1.0,
                                       )
-        exit_button.on_click = self.exit_click
-        self.box_layout.add(exit_button)
+        self.exit_button.on_click = self.exit_click
+        self.box_layout.add(self.exit_button)
 
-    def start_game_click(self, event, color='red'):
+    def start_game_click(self, event):  # Начало игры
         select_map = self.all_maps.index(self.dropdown.value) + 1
-        self.game_view = GameView(self, color, select_map)
+        self.game_view = GameView(self, self.color, self.turret, select_map)
         self.window.show_view(self.game_view)
+
+    def change_color_click(self, event, color): # Смена цвета и Перезапуск некоторых виджетов
+        self.color = color
+        self.available_maps = self.all_maps[:self.data[self.color][0]]
+        print(self.available_maps)
+
+        self.box_layout.remove(self.dropdown)
+
+        self.dropdown = UIDropdown(
+            default=self.available_maps[0],
+            options=self.available_maps,
+            width=190,
+            height=30
+        )
+        self.box_layout.add(self.dropdown)
+
+        self.barel_row.clear()
+
+        for i in range(min(self.data[self.color][0], 3)):
+            barrel_button = UITextureButton(text="", scale=2,
+                                                texture=arcade.load_texture(f"assets/sprites/barrels/tank{self.color.capitalize()}_barrel{i + 1}.png"))
+            barrel_button.on_click = lambda event: self.change_turret_click(event, i + 1)
+            self.barel_row.add(barrel_button)
+
+        self.box_layout.remove(self.exit_button)
+        self.box_layout.add(self.exit_button)
+
+    def change_turret_click(self, event, turret):  # Сохранение пушки
+        self.turret = turret
 
     # выходит с игры
     def exit_click(self, event):

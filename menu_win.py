@@ -1,4 +1,5 @@
 import arcade
+import csv
 from arcade.gui import (UIManager, UIAnchorLayout, UIBoxLayout, UILabel)
 
 
@@ -10,6 +11,7 @@ class WinView(arcade.View):
         self.menu = menu
         self.time_passed = 0
         self.text = 5
+
         self.manager = UIManager()
 
         self.anchor_layout = UIAnchorLayout()
