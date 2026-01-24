@@ -16,6 +16,7 @@ class MenuView(arcade.View):
 
         self.colors = ['red', 'blue', 'green', 'yellow']
         self.all_maps = ["1 карта", "2 карта", "3 карта", "4 карта"]
+        self.cannons = ["Орудие 1", "Орудие 2", "Орудие 3", "Орудие 4"]
 
         with open("progress.txt", "r", encoding="utf8") as file:
             self.count = int(file.read().strip())
@@ -92,13 +93,21 @@ class MenuView(arcade.View):
 
         self.box_layout.add(color_row)
 
-        self.dropdown = UIDropdown(
+        self.dropdown_1 = UIDropdown(
+            default=self.cannons[0],
+            options=self.cannons,
+            width=200,
+            height=30
+        )
+        self.box_layout.add(self.dropdown_1)
+
+        self.dropdown_2 = UIDropdown(
             default=self.available_maps[0],
             options=self.available_maps,
             width=200,
             height=30
         )
-        self.box_layout.add(self.dropdown)
+        self.box_layout.add(self.dropdown_2)
 
         exit_button = UITextureButton(text='Выход',
                                       texture=texture_normal,
@@ -110,8 +119,9 @@ class MenuView(arcade.View):
         self.box_layout.add(exit_button)
 
     def start_game_click(self, event, color='red'):
-        select_map = self.dropdown.value
-        self.game_view = GameView(self, color, select_map)
+        select_map = self.dropdown_2.value
+        select_cann = self.dropdown_1.value
+        self.game_view = GameView(self, color, select_map, select_cann)
         self.window.show_view(self.game_view)
 
     # выходит с игры
