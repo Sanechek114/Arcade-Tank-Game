@@ -46,6 +46,7 @@ class MenuView(arcade.View):
         self.anchor_layout.add(self.box_layout, anchor_x="center", anchor_y="center")
         self.manager.add(self.anchor_layout)
 
+        # Создание виджетов
     def setup_widgets(self):
         texture_normal = arcade.load_texture(":resources:/gui_basic_assets/button/red_normal.png")
         texture_hovered = arcade.load_texture(":resources:/gui_basic_assets/button/red_hover.png")
@@ -167,7 +168,7 @@ class MenuView(arcade.View):
         self.turret = 1
 
         self.box_layout.remove(self.dropdown)
-
+        # Карты
         self.dropdown = UIDropdown(
             default=self.available_maps[0],
             options=self.available_maps,
@@ -175,7 +176,7 @@ class MenuView(arcade.View):
             height=30
         )
         self.box_layout.add(self.dropdown)
-
+        # Пушки
         self.barel_row.clear()
 
         barrel_button1 = UITextureButton(

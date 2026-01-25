@@ -1,5 +1,5 @@
 TITLE = 'игра про танки'
-RELOUDTIME = 4
+RELOUDTIME = 3
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
 DEAD_ZONE_W = int(SCREEN_WIDTH * 0.35)
@@ -8,8 +8,8 @@ SCALE = SCREEN_HEIGHT / 540
 MAX_SPEED = 125 * SCALE
 ACCELERATION = 50 * SCALE
 BRAKINGFORCE = 50 * SCALE
-TURRETROTATIONSPEED = 70
-HULLROTATIONSPEED = 80
+TURRETROTATIONSPEED = 100
+HULLROTATIONSPEED = 90
 CAMERA_LERP = 1
 ANIMATION_SPEED = 0.25
 BULLET_TIME = 3
@@ -24,7 +24,8 @@ PLAYER_COORDS = [
     (3, 4),
     (8, 2)
     ]
-# Координаты врагов на разных картах
+# Координаты спавна и тип врагов на разных картах
+# 1, 2 - координаты. 3 - тип врага от 1 до 4(4 - БОСС).
 ENEMY_COORDS_TYPE = [
     [
         (4.5, 4.5, 1),

@@ -6,6 +6,7 @@ import math
 from bullet_class import Bullet
 
 
+# Класс корпуса
 class Tank_hull(arcade.Sprite):
     def __init__(self, x, y, path, max_speed):
         super().__init__(path, center_x=x, center_y=y, scale=SCALE, angle=180)
@@ -35,9 +36,8 @@ class Tank_hull(arcade.Sprite):
         self.change_y = self.speed * math.cos(
             math.radians(self.angle + 180)) * delta_time
 
-        #  self.position = (self.center_x + self.change_x, self.center_y + self.change_y)
 
-
+# Класс Пушки
 class Tank_turret(arcade.Sprite):
     def __init__(self, path, bullet_path, bullets, hull, reloudtime, turret_id):
         super().__init__(path, scale=SCALE)
@@ -45,9 +45,10 @@ class Tank_turret(arcade.Sprite):
         self.shoot_sound = arcade.load_sound("assets/sounds/shoot.wav")
         self.bullets = bullets
         self.hull = hull
+        # Урон от попадания, Множитель скорости
         bullet_modifers = {1: (1, 1),
-                           2: (2.5, 0.75),
-                           3: (2, 1.5)}
+                           2: (2.5, 0.6),
+                           3: (2, 1.75)}
         self.bullet_damage, self.bullet_speed = bullet_modifers[turret_id]
         self.reloudtimer = 0
         self.reloudtime = reloudtime

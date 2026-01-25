@@ -27,12 +27,12 @@ class GameView(arcade.View):
         # карта
         self.tile_map = arcade.load_tilemap(
             f"assets/tank_map_{map}.tmx", SCALE, use_spatial_hash=True)
-        self.scene = self.tile_map.sprite_lists['grass']
-        self.static = self.tile_map.sprite_lists['statics']
-        self.trees = self.tile_map.sprite_lists['trees']
-        self.breaking = self.tile_map.sprite_lists['breaking']
-        self.decorations = self.tile_map.sprite_lists['decorations']
-        self.border = self.tile_map.sprite_lists['border']
+        self.scene = self.tile_map.sprite_lists['grass']  # Трава Песок
+        self.static = self.tile_map.sprite_lists['statics'] # Статичные Объекты
+        self.trees = self.tile_map.sprite_lists['trees']  # Деревья
+        self.breaking = self.tile_map.sprite_lists['breaking']  # Разрушаемые Объекты
+        self.decorations = self.tile_map.sprite_lists['decorations']  # Грязь Ветки
+        self.border = self.tile_map.sprite_lists['border']  # Статичные но проходят пули
 
         self.health_texture = arcade.load_texture("assets/health.png")
         self.reloud_texture = arcade.load_texture("assets/relouding.png")
@@ -87,9 +87,9 @@ class GameView(arcade.View):
 
         self.enemy_to_player_colis = arcade.PhysicsEngineSimple(
             self.player.hull, self.enemies_hulls)
-
         time.sleep(1)
 
+    # Отрисовка Всего
     def on_draw(self):
         self.clear()
         self.world_camera.use()
@@ -110,6 +110,7 @@ class GameView(arcade.View):
         self.timer += delta_time
         control = (self.forward, self.backward,
                    self.right, self.left, self.fire, self.mouseXY)
+        # Game Over и Game Win
         if not self.game_over:
             self.player.update(delta_time, control)
             if self.player.lives <= 0:
@@ -146,6 +147,8 @@ class GameView(arcade.View):
 
         if len(colliding):
             self.player.hull.speed = 0  # Остоновка игрока при столкновениях
+        
+        # Все проверки связаные с пулями
 
         self.bullets.update(delta_time)
         self.explosions.update(delta_time)
@@ -155,7 +158,7 @@ class GameView(arcade.View):
         if bullets:
             for bullet in bullets:
                 if not bullet.player:
-                    self.player.lives -= bullet.damage
+                    self.player.lives = max(self.player.lives - bullet.damage, 0)
                     self.bullets.remove(bullet)
                     if self.player.lives <= 0:
                         self.explosions.append(
@@ -183,6 +186,7 @@ class GameView(arcade.View):
             if any((broken, enemies_hulls and bullet.player, static)):
                 self.bullets.remove(bullet)
 
+    # Отрисовка перезарядки и здоровья
     def draw_reloding_lives(self):
         lives, max_lives, reloudtime, reloudtimer = self.player.get_lives_relouding()
         dx = (reloudtime - reloudtimer) / reloudtime
