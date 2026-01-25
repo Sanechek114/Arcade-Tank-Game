@@ -1,5 +1,5 @@
 import arcade
-from config import (SCALE, SCREEN_WIDTH, SCREEN_HEIGHT, LIVES, LIVES_COEF,
+from config import (SCALE, SCREEN_WIDTH, SCREEN_HEIGHT, LIVES,
                     MAX_SPEED,
                     HULLROTATIONSPEED, TURRETROTATIONSPEED, RELOUDTIME)
 import math
@@ -7,8 +7,8 @@ from bullet_class import Bullet
 
 
 class Tank_hull(arcade.Sprite):
-    def __init__(self, path, max_speed):
-        super().__init__(path, center_x=100, center_y=200, scale=SCALE, angle=180)
+    def __init__(self, x, y, path, max_speed):
+        super().__init__(path, center_x=x, center_y=y, scale=SCALE, angle=180)
         self.max_speed = max_speed
         self.speed = 0
 
@@ -40,7 +40,7 @@ class Tank_hull(arcade.Sprite):
 
 class Tank_turret(arcade.Sprite):
     def __init__(self, path, bullet_path, bullets, hull, reloudtime, turret_id):
-        super().__init__(path, center_x=465 - 16 * 4, center_y=465, scale=SCALE)
+        super().__init__(path, scale=SCALE)
         self.bullet_path = bullet_path
         self.shoot_sound = arcade.load_sound("assets/sounds/shoot.wav")
         self.bullets = bullets
@@ -91,7 +91,7 @@ class Tank_turret(arcade.Sprite):
 
 
 class Player(arcade.SpriteList):
-    def __init__(self, color, turret_id, lives_, bullets, walls):
+    def __init__(self, x, y, color, turret_id, lives_multip, bullets, walls):
         super().__init__()
         self.bullets = bullets
         self.walls = walls
@@ -99,26 +99,30 @@ class Player(arcade.SpriteList):
         self.turret_id = turret_id
         # color: reloud time, lives, speed
         modifications = {'red': (
-                             RELOUDTIME, LIVES, MAX_SPEED),
+                             RELOUDTIME, LIVES * lives_multip, MAX_SPEED),
                          'blue': (
-                             RELOUDTIME // 1.5, LIVES, MAX_SPEED // 2),
+                             RELOUDTIME // 1.5, LIVES * lives_multip,
+                             MAX_SPEED // 2),
                          'green': (
-                             RELOUDTIME * 1.5, LIVES * 2, MAX_SPEED),
+                             RELOUDTIME * 1.5, LIVES * 2 * lives_multip,
+                             MAX_SPEED),
                          'yellow': (
-                             RELOUDTIME, LIVES // 2, MAX_SPEED * 1.5)}
+                             RELOUDTIME, LIVES // 1.5 * lives_multip,
+                             MAX_SPEED * 1.5)}
 
         reloudtime, self.lives, max_speed = modifications[color]
+        self.max_lives = self.lives
         self.turret_path = f"assets/sprites/barrels/tank{color.capitalize()}_barrel{turret_id}.png"
         self.hull_path = f"assets/sprites/bodyes/tankBody_{color}_outline.png"
         self.bullet_path = f"assets/sprites/bullets/bullet{color.capitalize()}{turret_id}_outline.png"
 
-        self.hull = Tank_hull(self.hull_path, max_speed)
+        self.hull = Tank_hull(x, y, self.hull_path, max_speed)
         self.turret = Tank_turret(self.turret_path, self.bullet_path, bullets, self.hull, reloudtime, turret_id)
         self.append(self.hull)
         self.append(self.turret)
 
     def get_lives_relouding(self):
-        return (self.lives, self.turret.reloudtime,
+        return (self.lives, self.max_lives, self.turret.reloudtime,
                 self.turret.reloudtimer)
 
     def update(self, delta_time, control):

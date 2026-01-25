@@ -25,7 +25,6 @@ class MenuView(arcade.View):
                     key, values = line.strip().split(': ')
                     x, y = map(int, values.split(', '))
                     self.data[key] = (x, y)
-        print(self.data)
         self.turret = self.data[self.color][1]
 
         font = arcade.load_font('assets/south_park.ttf')
@@ -119,7 +118,7 @@ class MenuView(arcade.View):
 
         for i in range(min(self.data[self.color][0], 3)):
             barrel_button = UITextureButton(text="", scale=2,
-                                                texture=arcade.load_texture(f"assets/sprites/barrels/tank{self.color.capitalize()}_barrel1.png"))
+                                                texture=arcade.load_texture(f"assets/sprites/barrels/tank{self.color.capitalize()}_barrel{i + 1}.png"))
             barrel_button.on_click = lambda event: self.change_turret_click(event, i + 1)
             self.barel_row.add(barrel_button)
 
@@ -150,10 +149,10 @@ class MenuView(arcade.View):
         self.game_view = GameView(self, self.color, self.turret, select_map)
         self.window.show_view(self.game_view)
 
-    def change_color_click(self, event, color): # Смена цвета и Перезапуск некоторых виджетов
+    def change_color_click(self, event, color):  # Смена цвета и Перезапуск некоторых виджетов
         self.color = color
         self.available_maps = self.all_maps[:self.data[self.color][0]]
-        print(self.available_maps)
+        self.turret = self.data[self.color][1]
 
         self.box_layout.remove(self.dropdown)
 

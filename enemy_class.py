@@ -1,4 +1,5 @@
 import arcade
+import random
 from config import (SCALE, ENEMY_VIEW, MAX_SPEED, BULLET_SPEED,
                     HULLROTATIONSPEED, TURRETROTATIONSPEED, RELOUDTIME)
 from bullet_class import Bullet
@@ -6,9 +7,9 @@ import math
 from explosion import Explosion
 
 
-class Tank_hull(arcade.Sprite):
-    def __init__(self, path, player, lives):
-        super().__init__(path, SCALE, 465, 465)
+class Enemy_hull(arcade.Sprite):
+    def __init__(self, path, x, y, player, lives):
+        super().__init__(path, SCALE, x, y)
         self.player = player
         self.speed = MAX_SPEED / 3
         self.on_point = True
@@ -48,7 +49,7 @@ class Tank_hull(arcade.Sprite):
             self.change_x, self.change_y = 0, 0
 
 
-class Tank_turret(arcade.Sprite):
+class Enemy_turret(arcade.Sprite):
     def __init__(self, path, bullet_path, player, bullets, bullet_speed_coef, bullet_damage):
         super().__init__(path, center_x=200, center_y=800, scale=SCALE)
         self.shoot_sound = arcade.load_sound("assets/sounds/awp.mp3")
@@ -112,22 +113,22 @@ class Tank_turret(arcade.Sprite):
 
 
 class Enemy(arcade.SpriteList):
-    def __init__(self, enemy_id,  player, bullets):
+    def __init__(self, x, y, enemy_id,  player, bullets):
         super().__init__()
         self.player = player
         self.bullets = bullets
         # id: (lives, damage, bullet speed coef)
         enemy_lives, bullet_damage, bullet_speed, = {
             1: (2, 1, 1.25),
-            2: (3, 2, 0.1),
+            2: (3, 2, 1),
             3: (6, 2, 1.25)}[enemy_id]
 
 
         self.turret_path = f"assets/sprites/barrels/enemy/specialBarrel{enemy_id}.png"
         self.hull_path = f"assets/sprites/bodyes/enemy/tankBody_{enemy_id}.png"
         self.bullet_path = f"assets/sprites/bullets/enemy/bulletDark{enemy_id}_outline.png"
-        self.hull = Tank_hull(self.hull_path, player, enemy_lives)
-        self.turret = Tank_turret(self.turret_path, self.bullet_path,
+        self.hull = Enemy_hull(self.hull_path, x, y, player, enemy_lives)
+        self.turret = Enemy_turret(self.turret_path, self.bullet_path,
                                   player, bullets, bullet_speed, bullet_damage)
 
         self.append(self.hull)
@@ -166,11 +167,11 @@ class Boss(arcade.SpriteList):
         self.hull_path = "assets/sprites/bodyes/enemy/tankBody_4.png"
         self.bullet_path1 = "assets/sprites/bullets/enemy/bulletDark3_outline.png"
         self.bullet_path2 = "assets/sprites/bullets/enemy/bulletDark2_outline.png"
-        self.hull = Tank_hull(self.hull_path, player, lives)
-        self.turret1 = Tank_turret(self.turret_path1, self.bullet_path1,
+        self.hull = Enemy_hull(self.hull_path, player, lives)
+        self.turret1 = Enemy_turret(self.turret_path1, self.bullet_path1,
                                    player, bullets, bullet_speed1, bullet_damage1)
         self.turret1.reloudtime = RELOUDTIME * 1.5
-        self.turret2 = Tank_turret(self.turret_path2, self.bullet_path2,
+        self.turret2 = Enemy_turret(self.turret_path2, self.bullet_path2,
                                    player, bullets, bullet_speed2, bullet_damage2)
 
         self.append(self.hull)

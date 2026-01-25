@@ -139,7 +139,7 @@
   <object id="503" gid="65" x="1085.67" y="313.667" width="26" height="22"/>
   <object id="504" gid="65" x="998" y="137" width="26" height="22"/>
  </objectgroup>
- <objectgroup id="10" name="statics" visible="0">
+ <objectgroup id="10" name="statics">
   <object id="366" gid="51" x="0.666667" y="300.667" width="40" height="45.3333"/>
   <object id="367" gid="51" x="34" y="294" width="38.6667" height="46.6667"/>
   <object id="368" gid="51" x="80.3333" y="304" width="42.6667" height="45.3333"/>
@@ -205,7 +205,7 @@
   <object id="462" gid="47" x="87.3333" y="71.3333" width="37.3333" height="45.3333"/>
   <object id="463" gid="50" x="199.333" y="434" width="36" height="36"/>
  </objectgroup>
- <objectgroup id="11" name="breaking" visible="0">
+ <objectgroup id="11" name="breaking">
   <object id="510" gid="62" x="836.333" y="804.667" width="42" height="28"/>
   <object id="515" gid="53" x="686.366" y="725.451" width="37.3333" height="36" rotation="325.002"/>
   <object id="516" gid="53" x="683.378" y="677.326" width="32" height="30.6667" rotation="346.43"/>
@@ -270,7 +270,7 @@
   <object id="465" gid="60" x="93.0985" y="413.389" width="46.9329" height="37.1712" rotation="78.4688"/>
   <object id="466" gid="59" x="87.7265" y="477.35" width="52.507" height="29.4739" rotation="52.7336"/>
  </objectgroup>
- <objectgroup id="8" name="trees" visible="0">
+ <objectgroup id="8" name="trees">
   <object id="338" gid="66" x="352" y="98.6667" width="64" height="64"/>
   <object id="339" gid="66" x="270.667" y="145.333" width="64" height="64"/>
   <object id="340" gid="66" x="298.667" y="209.333" width="64" height="64"/>

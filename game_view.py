@@ -2,6 +2,7 @@ import arcade
 from random import randint, choice
 from config import (SCALE, SCREEN_HEIGHT, SCREEN_WIDTH, RELOUDTIME,
                     CAMERA_LERP)
+from config import PLAYER_COORDS, ENEMY_COORDS_TYPE
 from tank import Player
 from explosion import Explosion
 from pause_class import PauseView
@@ -19,6 +20,8 @@ class GameView(arcade.View):
         self.world_camera = arcade.camera.Camera2D()
         self.world_width = SCREEN_WIDTH
         self.world_height = SCREEN_HEIGHT
+        self.color = color
+        self.map = map
         # карта
         self.tile_map = arcade.load_tilemap(
             f"assets/tank_map_{map}.tmx", SCALE, use_spatial_hash=True)
@@ -48,14 +51,15 @@ class GameView(arcade.View):
         self.walls = arcade.SpriteList(True)
         self.walls.extend(self.static)
         self.walls.extend(self.breaking)
+        Px, Py = PLAYER_COORDS[map - 1]
+        self.player = Player(Px * SCALE, Py * SCALE, color, turret, 2, self.bullets, self.walls)
 
-        self.player = Player(color, turret, 1.5, self.bullets, self.walls)
-
-        self.enemy = Enemy(1, self.player.hull, self.bullets)
-        self.enemy.collision = arcade.PhysicsEngineSimple(
-            self.enemy.hull, self.walls)
         self.enemies = []
-        self.enemies.append(self.enemy)
+        for x, y, enemy_type in ENEMY_COORDS_TYPE[map - 1]:
+            enemy = Enemy(x * SCALE, y * SCALE, enemy_type, self.player.hull, self.bullets)
+            enemy.collision = arcade.PhysicsEngineSimple(
+                enemy.hull, self.walls)
+            self.enemies.append(enemy)
 
         self.collision = arcade.PhysicsEngineSimple(
             self.player.hull, self.walls)
@@ -135,7 +139,6 @@ class GameView(arcade.View):
             for bullet in bullets:
                 if not bullet.player:
                     self.player.lives -= bullet.damage
-                    print(bullet.damage)
                     self.bullets.remove(bullet)
                     if self.player.lives <= 0:
                         self.explosions.append(
@@ -157,7 +160,6 @@ class GameView(arcade.View):
                     self.walls.remove(elem)
 
             elif enemies_hulls and bullet.player:
-                print(bullet.damage)
                 self.bullets.remove(bullet)
                 for hull in enemies_hulls:
                     hull.next_point(True)
@@ -167,11 +169,8 @@ class GameView(arcade.View):
                 self.bullets.remove(bullet)
 
     def draw_reloding_lives(self):
-        lives, reloudtime, reloudtimer = self.player.get_lives_relouding()
-        try:
-            dx = (reloudtime - reloudtimer) / reloudtime
-        except ZeroDivisionError:
-            dx = 0
+        lives, max_lives, reloudtime, reloudtimer = self.player.get_lives_relouding()
+        dx = (reloudtime - reloudtimer) / reloudtime
         x, y = self.world_camera.position
         arcade.draw_lbwh_rectangle_filled(
             x - self.width * 0.15, y - self.height * 0.45,
@@ -179,17 +178,17 @@ class GameView(arcade.View):
         arcade.draw_lbwh_rectangle_filled(
             x + self.width * 0.15, y - self.height * 0.45,
             -self.width * 0.3 * (1 - dx), SCALE * 4, arcade.color.RED)
-        for n in range(lives):
-            arcade.draw_lbwh_rectangle_filled(
-                x - self.width * 0.14 + n * 0.1 * self.width,
-                y - self.height * 0.43,
-                self.width * 0.08, SCALE * 4, arcade.color.RED)
+
+        dx = lives / max_lives
+        arcade.draw_lbwh_rectangle_filled(
+                x - self.width * 0.15, y - self.height * 0.43,
+                self.width * 0.5 * dx, SCALE * 4, arcade.color.RED)
 
     def open_game_over(self, event):
         self.window.show_view(GameOverView(self, self.menu))
 
     def open_game_win(self, event):
-        self.window.show_view(WinView(self, self.menu))
+        self.window.show_view(WinView(self, self.menu, self.color, self.map))
 
     def world_camera_update(self):
         position = (
