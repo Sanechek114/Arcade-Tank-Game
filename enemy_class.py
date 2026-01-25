@@ -58,7 +58,7 @@ class Enemy_turret(arcade.Sprite):
     def __init__(self, path, bullet_path, player, bullets,
                  bullet_speed_coef, bullet_damage):
         super().__init__(path, center_x=200, center_y=800, scale=SCALE)
-        self.shoot_sound = arcade.load_sound("assets/sounds/awp.mp3")
+        self.shoot_sound = arcade.load_sound("assets/sounds/shoot.wav")
         self.reloudtime = RELOUDTIME
         self.bullet_path = bullet_path
         self.bullet_speed_coef = bullet_speed_coef

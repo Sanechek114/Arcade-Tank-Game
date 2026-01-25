@@ -1,6 +1,6 @@
 import arcade
 from arcade.gui import (UITextureButton, UIManager, UIAnchorLayout, UIBoxLayout, UILabel, UIDropdown)
-
+import os
 from game_view import GameView
 
 
@@ -113,14 +113,25 @@ class MenuView(arcade.View):
         # Кнопки выбора пушки
 
         self.barel_row = UIBoxLayout(vertical=False, space_between=10)
-        print(list(range(min(self.data[self.color], 3))))
-        for i in range(min(self.data[self.color], 3)):
-            print(i)
-            barrel_button = UITextureButton(
+
+        barrel_button1 = UITextureButton(
+            text="", scale=2,
+            texture=arcade.load_texture(f"assets/sprites/barrels/tank{self.color.capitalize()}_barrel{1}.png"))
+        barrel_button1.on_click = lambda event: self.change_turret_click(event, 1)
+        self.barel_row.add(barrel_button1)
+
+        if self.data[self.color] > 1:
+            barrel_button2 = UITextureButton(
                 text="", scale=2,
-                texture=arcade.load_texture(f"assets/sprites/barrels/tank{self.color.capitalize()}_barrel{i + 1}.png"))
-            barrel_button.on_click = lambda event: self.change_turret_click(event, i + 1)
-            self.barel_row.add(barrel_button)
+                texture=arcade.load_texture(f"assets/sprites/barrels/tank{self.color.capitalize()}_barrel{2}.png"))
+            barrel_button2.on_click = lambda event: self.change_turret_click(event, 2)
+            self.barel_row.add(barrel_button2)
+            if self.data[self.color] > 2:
+                barrel_button3 = UITextureButton(
+                    text="", scale=2,
+                    texture=arcade.load_texture(f"assets/sprites/barrels/tank{self.color.capitalize()}_barrel{3}.png"))
+                barrel_button3.on_click = lambda event: self.change_turret_click(event, 3)
+                self.barel_row.add(barrel_button3)
 
         self.box_layout.add(self.barel_row)
 
@@ -167,19 +178,30 @@ class MenuView(arcade.View):
 
         self.barel_row.clear()
 
-        for i in range(min(self.data[self.color], 3)):
-            barrel_button = UITextureButton(
+        barrel_button1 = UITextureButton(
+            text="", scale=2,
+            texture=arcade.load_texture(f"assets/sprites/barrels/tank{self.color.capitalize()}_barrel{1}.png"))
+        barrel_button1.on_click = lambda event: self.change_turret_click(event, 1)
+        self.barel_row.add(barrel_button1)
+
+        if self.data[self.color] > 1:
+            barrel_button2 = UITextureButton(
                 text="", scale=2,
-                texture=arcade.load_texture(f"assets/sprites/barrels/tank{self.color.capitalize()}_barrel{i + 1}.png"))
-            barrel_button.on_click = lambda event: self.change_turret_click(event, i + 1)
-            self.barel_row.add(barrel_button)
+                texture=arcade.load_texture(f"assets/sprites/barrels/tank{self.color.capitalize()}_barrel{2}.png"))
+            barrel_button2.on_click = lambda event: self.change_turret_click(event, 2)
+            self.barel_row.add(barrel_button2)
+            if self.data[self.color] > 2:
+                barrel_button3 = UITextureButton(
+                    text="", scale=2,
+                    texture=arcade.load_texture(f"assets/sprites/barrels/tank{self.color.capitalize()}_barrel{3}.png"))
+                barrel_button3.on_click = lambda event: self.change_turret_click(event, 3)
+                self.barel_row.add(barrel_button3)
 
         self.box_layout.remove(self.exit_button)
         self.box_layout.add(self.exit_button)
 
     def change_turret_click(self, event, turret):  # Сохранение пушки
         self.turret = turret
-        print(turret)
 
     # выходит с игры
     def exit_click(self, event):
@@ -187,8 +209,7 @@ class MenuView(arcade.View):
 
     # сохраненные рекорды игрока
     def records_click(self, event):
-        # подключить к БД
-        pass
+        os.startfile('records.txt')
 
     def on_key_press(self, symbol, modifiers):
         if symbol == arcade.key.ESCAPE:

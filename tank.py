@@ -46,10 +46,9 @@ class Tank_turret(arcade.Sprite):
         self.bullets = bullets
         self.hull = hull
         bullet_modifers = {1: (1, 1),
-                           2: (3, 0.5),
+                           2: (2.5, 0.75),
                            3: (2, 1.5)}
         self.bullet_damage, self.bullet_speed = bullet_modifers[turret_id]
-        print(self.bullet_damage, self.bullet_speed)
         self.reloudtimer = 0
         self.reloudtime = reloudtime
 

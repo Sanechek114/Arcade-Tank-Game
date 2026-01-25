@@ -22,6 +22,8 @@ class GameView(arcade.View):
         self.world_height = SCREEN_HEIGHT
         self.color = color
         self.map = map
+        self.timer = 0
+        self.stop = False
         # карта
         self.tile_map = arcade.load_tilemap(
             f"assets/tank_map_{map}.tmx", SCALE, use_spatial_hash=True)
@@ -31,6 +33,9 @@ class GameView(arcade.View):
         self.breaking = self.tile_map.sprite_lists['breaking']
         self.decorations = self.tile_map.sprite_lists['decorations']
         self.border = self.tile_map.sprite_lists['border']
+
+        self.health_texture = arcade.load_texture("assets/health.png")
+        self.reloud_texture = arcade.load_texture("assets/relouding.png")
 
         self.ai_walls = arcade.SpriteList(True)
         self.ai_walls.extend(self.static)
@@ -55,7 +60,12 @@ class GameView(arcade.View):
         self.walls.extend(self.breaking)
         self.walls.extend(self.border)
         Px, Py = PLAYER_COORDS[map - 1]
-        self.player = Player(Px * 64 * SCALE, Py * 64 * SCALE, color, turret, 2, self.bullets, self.walls)
+
+        if map == 4:
+            lives_multip = 2
+        else:
+            lives_multip = 1
+        self.player = Player(Px * 64 * SCALE, Py * 64 * SCALE, color, turret, lives_multip, self.bullets, self.walls)
 
         self.enemies = []
         for x, y, enemy_type in ENEMY_COORDS_TYPE[map - 1]:
@@ -97,9 +107,9 @@ class GameView(arcade.View):
         self.draw_reloding_lives()
 
     def on_update(self, delta_time):
+        self.timer += delta_time
         control = (self.forward, self.backward,
                    self.right, self.left, self.fire, self.mouseXY)
-
         if not self.game_over:
             self.player.update(delta_time, control)
             if self.player.lives <= 0:
@@ -160,19 +170,17 @@ class GameView(arcade.View):
                 bullet, self.enemies_hulls)
 
             if broken:
-                self.bullets.remove(bullet)
                 for elem in broken:
                     self.breaking.remove(elem)
                     self.ai_walls.remove(elem)
                     self.walls.remove(elem)
 
             elif enemies_hulls and bullet.player:
-                self.bullets.remove(bullet)
                 for hull in enemies_hulls:
                     hull.next_point(True)
                     hull.lives -= bullet.damage
 
-            elif static:
+            if any((broken, enemies_hulls and bullet.player, static)):
                 self.bullets.remove(bullet)
 
     def draw_reloding_lives(self):
@@ -180,22 +188,31 @@ class GameView(arcade.View):
         dx = (reloudtime - reloudtimer) / reloudtime
         x, y = self.world_camera.position
         arcade.draw_lbwh_rectangle_filled(
-            x - self.width * 0.15, y - self.height * 0.45,
-            self.width * 0.3 * dx, SCALE * 4, arcade.color.GREEN)
+            x - self.width * 0.15, y - self.height * 0.47,
+            self.width * 0.3 * dx, SCALE * 10, arcade.color.GREEN)
         arcade.draw_lbwh_rectangle_filled(
-            x + self.width * 0.15, y - self.height * 0.45,
-            -self.width * 0.3 * (1 - dx), SCALE * 4, arcade.color.RED)
+            x + self.width * 0.15, y - self.height * 0.47,
+            -self.width * 0.3 * (1 - dx), SCALE * 10, arcade.color.RED)
 
         dx = lives / max_lives
         arcade.draw_lbwh_rectangle_filled(
-                x - self.width * 0.15, y - self.height * 0.43,
-                self.width * 0.5 * dx, SCALE * 4, arcade.color.RED)
+                x - self.width * 0.25, y - self.height * 0.43,
+                self.width * 0.5, SCALE * 10, arcade.color.BLACK)
+        arcade.draw_lbwh_rectangle_filled(
+                x - self.width * 0.25, y - self.height * 0.43,
+                self.width * 0.5 * dx, SCALE * 10, arcade.color.RED)
+        arcade.draw_texture_rect(self.health_texture, arcade.rect.LRBT(x - self.width * 0.29, x - self.width * 0.26, y - self.height * 0.44, y - self.height * 0.40))
+        arcade.draw_texture_rect(self.reloud_texture, arcade.rect.LRBT(x - self.width * 0.29, x - self.width * 0.26, y - self.height * 0.48, y - self.height * 0.44))
 
     def open_game_over(self, event):
-        self.window.show_view(GameOverView(self, self.menu))
+        if not self.stop:
+            self.window.show_view(GameOverView(self, self.menu))
+            self.stop = True
 
     def open_game_win(self, event):
-        self.window.show_view(WinView(self, self.menu, self.color, self.map))
+        if not self.stop:
+            self.window.show_view(WinView(self, self.menu, self.color, self.map, self.timer))
+            self.stop = True
 
     def world_camera_update(self):
         position = (

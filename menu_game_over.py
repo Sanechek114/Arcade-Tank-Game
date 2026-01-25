@@ -4,7 +4,6 @@ from config import SCALE
 from arcade.gui import (UIManager, UIAnchorLayout, UIBoxLayout, UILabel)
 
 
-
 class GameOverView(arcade.View):
     def __init__(self, game_view, menu):
         super().__init__()
@@ -59,7 +58,6 @@ class GameOverView(arcade.View):
 
     def on_update(self, delta_time):
         self.time_passed += delta_time
-        print(self.time_passed)
         if self.time_passed >= 1 and self.text != 0:  # каждые 2 секунды
             self.text -= 1
             self.time_passed = 0

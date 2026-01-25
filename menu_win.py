@@ -4,7 +4,7 @@ from config import SCALE
 
 
 class WinView(arcade.View):
-    def __init__(self, game_view, menu, color, level):
+    def __init__(self, game_view, menu, color, level, time):
         super().__init__()
         self.game_view = game_view
         self.menu = menu
@@ -12,6 +12,10 @@ class WinView(arcade.View):
         self.text = 5
         self.color = color
         self.textXY = self.game_view.player.hull.position
+        self.time = round(time, 2)
+
+        with open('records.txt', 'a', ) as f:
+            f.write(f"color: {self.color}, level: {level}, time: {self.time}\n")
 
         self.data = {}
         with open('progress.txt', 'r') as f:
@@ -21,7 +25,7 @@ class WinView(arcade.View):
                     self.data[key] = int(value)
 
         levels = self.data[color]
-        self.data[color] = (max([level + 1, levels]))
+        self.data[color] = min(4, (max([level + 1, levels])))
         with open('progress.txt', 'w') as f:
             for key, value in self.data.items():
                 f.write(f"{key}: {value}\n")
@@ -52,17 +56,28 @@ class WinView(arcade.View):
                          width=200,
                          align="center")
         self.box_layout.add(label)
-        label2 = UILabel(text="НАЖМИТЕ НА ПРОБЕЛ, ЧТОБЫ ПРОПУСТИТЬ",
+        label2 = UILabel(text=f"За {self.time} секунд!",
                          font_size=30,
                          text_color=arcade.color.GREEN,
                          width=200,
                          align="center")
         self.box_layout.add(label2)
+        label3 = UILabel(text="НАЖМИТЕ НА ПРОБЕЛ, ЧТОБЫ ПРОПУСТИТЬ",
+                         font_size=30,
+                         text_color=arcade.color.GREEN,
+                         width=200,
+                         align="center")
+        self.box_layout.add(label3)
+        self.label4 = UILabel(text="",
+                         font_size=40,
+                         text_color=arcade.color.RED,
+                         width=200,
+                         align="center")
+        self.box_layout.add(self.label4)
 
     def on_draw(self):
         self.clear()
         self.game_view.on_draw()
-        arcade.draw_text(self.text, self.textXY[0], self.textXY[1] + SCALE * 100, arcade.color.GREEN, 20)
         self.manager.draw()
 
     def on_key_press(self, key, modifiers):
@@ -75,11 +90,12 @@ class WinView(arcade.View):
 
     def on_update(self, delta_time):
         self.time_passed += delta_time
-        if self.time_passed >= 1 and self.text != 0:  # каждые 2 секунды
+        if self.time_passed >= 1 and self.text != 0:  # каждую 1 секунду
             self.text -= 1
             self.time_passed = 0
         if self.text == 0:
             self.main_menu_button_click(None)
+        self.label4.text = self.text
 
 
 class MyGUIWindow(arcade.Window):
