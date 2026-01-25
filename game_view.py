@@ -30,11 +30,13 @@ class GameView(arcade.View):
         self.trees = self.tile_map.sprite_lists['trees']
         self.breaking = self.tile_map.sprite_lists['breaking']
         self.decorations = self.tile_map.sprite_lists['decorations']
+        self.border = self.tile_map.sprite_lists['border']
 
         self.ai_walls = arcade.SpriteList(True)
         self.ai_walls.extend(self.static)
         self.ai_walls.extend(self.trees)
         self.ai_walls.extend(self.breaking)
+        self.ai_walls.extend(self.border)
 
         self.reloudtimer = 0
         self.mouseXY = (0, 0)
@@ -51,6 +53,7 @@ class GameView(arcade.View):
         self.walls = arcade.SpriteList(True)
         self.walls.extend(self.static)
         self.walls.extend(self.breaking)
+        self.walls.extend(self.border)
         Px, Py = PLAYER_COORDS[map - 1]
         self.player = Player(Px * 64 * SCALE, Py * 64 * SCALE, color, turret, 2, self.bullets, self.walls)
 
@@ -84,6 +87,7 @@ class GameView(arcade.View):
         self.decorations.draw(pixelated=True)
         self.static.draw(pixelated=True)
         self.breaking.draw(pixelated=True)
+        self.border.draw(pixelated=True)
         self.bullets.draw(pixelated=True)
         self.player.draw(pixelated=True)
         for enemy in self.enemies:
