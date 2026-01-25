@@ -151,7 +151,7 @@ class Enemy(arcade.SpriteList):
 
 
 class Boss(arcade.SpriteList):
-    def __init__(self, player, bullets):
+    def __init__(self, x, y, player, bullets):
         super().__init__()
         self.player = player
         self.bullets = bullets
@@ -167,7 +167,7 @@ class Boss(arcade.SpriteList):
         self.hull_path = "assets/sprites/bodyes/enemy/tankBody_4.png"
         self.bullet_path1 = "assets/sprites/bullets/enemy/bulletDark3_outline.png"
         self.bullet_path2 = "assets/sprites/bullets/enemy/bulletDark2_outline.png"
-        self.hull = Enemy_hull(self.hull_path, player, lives)
+        self.hull = Enemy_hull(self.hull_path, x, y, player, lives)
         self.turret1 = Enemy_turret(self.turret_path1, self.bullet_path1,
                                    player, bullets, bullet_speed1, bullet_damage1)
         self.turret1.reloudtime = RELOUDTIME * 1.5

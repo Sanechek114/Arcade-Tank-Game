@@ -56,7 +56,10 @@ class GameView(arcade.View):
 
         self.enemies = []
         for x, y, enemy_type in ENEMY_COORDS_TYPE[map - 1]:
-            enemy = Enemy(x * SCALE, y * SCALE, enemy_type, self.player.hull, self.bullets)
+            if enemy_type > 4:
+                enemy = Enemy(x * SCALE, y * SCALE, enemy_type, self.player.hull, self.bullets)
+            else:
+                enemy = Boss(self.player, )
             enemy.collision = arcade.PhysicsEngineSimple(
                 enemy.hull, self.walls)
             self.enemies.append(enemy)
