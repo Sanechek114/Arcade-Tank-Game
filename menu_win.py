@@ -17,16 +17,14 @@ class WinView(arcade.View):
         with open('progress.txt', 'r') as f:
             for line in f:
                 if ':' in line:
-                    key, values = line.strip().split(': ')
-                    x, y = map(int, values.split(', '))
-                    self.data[key] = (x, y)
+                    key, value = line.strip().split(': ')
+                    self.data[key] = int(value)
 
-        levels, turret = self.data[color]
-        dat = (max([level + 1, levels]), turret)
-        self.data[color] = dat
+        levels = self.data[color]
+        self.data[color] = (max([level + 1, levels]))
         with open('progress.txt', 'w') as f:
-            for key, values in self.data.items():
-                f.write(f"{key}: {values[0]}, {values[1]}\n")
+            for key, value in self.data.items():
+                f.write(f"{key}: {value}\n")
 
 
         self.manager = UIManager()

@@ -52,14 +52,14 @@ class GameView(arcade.View):
         self.walls.extend(self.static)
         self.walls.extend(self.breaking)
         Px, Py = PLAYER_COORDS[map - 1]
-        self.player = Player(Px * SCALE, Py * SCALE, color, turret, 2, self.bullets, self.walls)
+        self.player = Player(Px * 64 * SCALE, Py * 64 * SCALE, color, turret, 2, self.bullets, self.walls)
 
         self.enemies = []
         for x, y, enemy_type in ENEMY_COORDS_TYPE[map - 1]:
             if enemy_type < 4:
-                enemy = Enemy(x * SCALE, y * SCALE, enemy_type, self.player.hull, self.bullets)
+                enemy = Enemy(x * 64 * SCALE, y * 64 * SCALE, enemy_type, self.player.hull, self.bullets)
             else:
-                enemy = Boss(x * SCALE, y * SCALE, self.player.hull, self.bullets)
+                enemy = Boss(x * 64 * SCALE, y * 64 * SCALE, self.player.hull, self.bullets)
             enemy.collision = arcade.PhysicsEngineSimple(
                 enemy.hull, self.walls)
             self.enemies.append(enemy)

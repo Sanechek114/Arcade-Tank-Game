@@ -1,5 +1,4 @@
 import arcade
-import random
 from config import (SCALE, ENEMY_VIEW, MAX_SPEED, BULLET_SPEED,
                     HULLROTATIONSPEED, TURRETROTATIONSPEED, RELOUDTIME)
 from bullet_class import Bullet
@@ -16,31 +15,37 @@ class Enemy_hull(arcade.Sprite):
         self.player_point = self.position
         self.target_angle = self.angle
         self.lives = lives
+        self.timer = 0
 
     def next_point(self, player_in_sight):
         Hx, Hy = self.position
         if player_in_sight:
+            self.timer = 3
             self.player_point = self.player.position
         atan = math.atan2((-self.player_point[0] + Hx),
                           (-self.player_point[1] + Hy))
         self.target_angle = math.degrees(atan) % 360
         self.on_point = math.sqrt(
-            (self.player_point[0] - Hx) ** 2 + \
+            (self.player_point[0] - Hx) ** 2 +
             (self.player_point[1] - Hy) ** 2) < 100 * SCALE
 
     def update(self, delta_time, player_in_sight):
+        self.timer = max((self.timer - delta_time, 0))
         self.next_point(player_in_sight)
+        if self.timer == 0:
+            self.player_point = self.position
         self.enemy_rotate(delta_time)
         if abs(self.target_angle - self.angle) % 360 <= 60:
             self.position = (self.center_x + self.change_x,
                              self.center_y + self.change_y)
 
     def enemy_rotate(self, delta_time):
-        if 0 < abs((self.target_angle - self.angle + 360) % 360) < 180:
-            self.angle += HULLROTATIONSPEED / 1.5 * delta_time
-        if 360 > abs((self.target_angle - self.angle + 360) % 360) > 180:
-            self.angle -= HULLROTATIONSPEED / 1.5 * delta_time
         if not self.on_point:
+            if 0 < abs((self.target_angle - self.angle + 360) % 360) < 180:
+                self.angle += HULLROTATIONSPEED / 1.5 * delta_time
+            if 360 > abs((self.target_angle - self.angle + 360) % 360) > 180:
+                self.angle -= HULLROTATIONSPEED / 1.5 * delta_time
+
             self.change_x = self.speed * math.sin(
                 math.radians(self.angle + 180)) * delta_time
             self.change_y = self.speed * math.cos(
@@ -50,7 +55,8 @@ class Enemy_hull(arcade.Sprite):
 
 
 class Enemy_turret(arcade.Sprite):
-    def __init__(self, path, bullet_path, player, bullets, bullet_speed_coef, bullet_damage):
+    def __init__(self, path, bullet_path, player, bullets,
+                 bullet_speed_coef, bullet_damage):
         super().__init__(path, center_x=200, center_y=800, scale=SCALE)
         self.shoot_sound = arcade.load_sound("assets/sounds/awp.mp3")
         self.reloudtime = RELOUDTIME
@@ -123,13 +129,13 @@ class Enemy(arcade.SpriteList):
             2: (3, 2, 1),
             3: (6, 2, 1.25)}[enemy_id]
 
-
         self.turret_path = f"assets/sprites/barrels/enemy/specialBarrel{enemy_id}.png"
         self.hull_path = f"assets/sprites/bodyes/enemy/tankBody_{enemy_id}.png"
         self.bullet_path = f"assets/sprites/bullets/enemy/bulletDark{enemy_id}_outline.png"
         self.hull = Enemy_hull(self.hull_path, x, y, player, enemy_lives)
-        self.turret = Enemy_turret(self.turret_path, self.bullet_path,
-                                  player, bullets, bullet_speed, bullet_damage)
+        self.turret = Enemy_turret(
+            self.turret_path, self.bullet_path,
+            player, bullets, bullet_speed, bullet_damage)
 
         self.append(self.hull)
         self.append(self.turret)
@@ -140,7 +146,7 @@ class Enemy(arcade.SpriteList):
             self.hull.position,
             walls, ENEMY_VIEW,
             10)
-        
+
         self.hull.update(delta_time, self.player_in_sight)
         self.turret.update(delta_time, self.hull,
                            self.player_in_sight)
@@ -168,11 +174,13 @@ class Boss(arcade.SpriteList):
         self.bullet_path1 = "assets/sprites/bullets/enemy/bulletDark3_outline.png"
         self.bullet_path2 = "assets/sprites/bullets/enemy/bulletDark2_outline.png"
         self.hull = Enemy_hull(self.hull_path, x, y, player, lives)
-        self.turret1 = Enemy_turret(self.turret_path1, self.bullet_path1,
-                                   player, bullets, bullet_speed1, bullet_damage1)
+        self.turret1 = Enemy_turret(
+            self.turret_path1, self.bullet_path1,
+            player, bullets, bullet_speed1, bullet_damage1)
         self.turret1.reloudtime = RELOUDTIME * 1.5
-        self.turret2 = Enemy_turret(self.turret_path2, self.bullet_path2,
-                                   player, bullets, bullet_speed2, bullet_damage2)
+        self.turret2 = Enemy_turret(
+            self.turret_path2, self.bullet_path2,
+            player, bullets, bullet_speed2, bullet_damage2)
 
         self.append(self.hull)
         self.append(self.turret1)
@@ -194,9 +202,8 @@ class Boss(arcade.SpriteList):
         dx, dy = SCALE * 16 * math.sin(math.radians(angle)), SCALE * 16 * math.cos(math.radians(angle))
         self.turret1.position = x + dx, y + dy
         self.turret2.position = x - dx, y - dy
-        
+
         if self.hull.lives <= 0:
             explosions.append(Explosion(*self.hull.position, explosions))
             enemies.remove(self)
             enemies_hulls.remove(self.hull)
-

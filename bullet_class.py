@@ -4,7 +4,8 @@ from config import SCALE, BULLET_SPEED, BULLET_TIME
 
 
 class Bullet(arcade.Sprite):
-    def __init__(self, path, center_x, center_y, angle, speed_coef, damage, bul_list, player=False):
+    def __init__(self, path, center_x, center_y, angle,
+                 speed_coef, damage, bul_list, player=False):
         super().__init__(
             path, SCALE, center_x, center_y, angle)
         self.bullet_timer = 0

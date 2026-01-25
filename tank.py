@@ -49,6 +49,7 @@ class Tank_turret(arcade.Sprite):
                            2: (3, 0.5),
                            3: (2, 1.5)}
         self.bullet_damage, self.bullet_speed = bullet_modifers[turret_id]
+        print(self.bullet_damage, self.bullet_speed)
         self.reloudtimer = 0
         self.reloudtime = reloudtime
 
@@ -101,13 +102,13 @@ class Player(arcade.SpriteList):
         modifications = {'red': (
                              RELOUDTIME, LIVES * lives_multip, MAX_SPEED),
                          'blue': (
-                             RELOUDTIME // 1.5, LIVES * lives_multip,
-                             MAX_SPEED // 2),
+                             RELOUDTIME / 1.5, LIVES * lives_multip,
+                             MAX_SPEED / 1.5),
                          'green': (
                              RELOUDTIME * 1.5, LIVES * 2 * lives_multip,
                              MAX_SPEED),
                          'yellow': (
-                             RELOUDTIME, LIVES // 1.5 * lives_multip,
+                             RELOUDTIME, LIVES / 1.5 * lives_multip,
                              MAX_SPEED * 1.5)}
 
         reloudtime, self.lives, max_speed = modifications[color]
