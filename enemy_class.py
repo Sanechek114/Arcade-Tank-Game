@@ -2,8 +2,9 @@ import arcade
 from config import (SCALE, ENEMY_VIEW, MAX_SPEED, BULLET_SPEED,
                     HULLROTATIONSPEED, TURRETROTATIONSPEED, RELOUDTIME)
 from bullet_class import Bullet
-import math
 from explosion import Explosion
+from particles import make_smoke_puff
+import math
 
 
 class Enemy_hull(arcade.Sprite):
@@ -56,15 +57,17 @@ class Enemy_hull(arcade.Sprite):
 
 class Enemy_turret(arcade.Sprite):
     def __init__(self, path, bullet_path, player, bullets,
-                 bullet_speed_coef, bullet_damage):
+                 bullet_speed_coef, bullet_damage, emitters):
         super().__init__(path, center_x=200, center_y=800, scale=SCALE)
         self.shoot_sound = arcade.load_sound("assets/sounds/shoot.wav")
+        self.smoke_texture = arcade.make_soft_circle_texture(20 * SCALE, arcade.color.LIGHT_GRAY, 255, 80)
         self.reloudtime = RELOUDTIME
         self.bullet_path = bullet_path
         self.bullet_speed_coef = bullet_speed_coef
         self.bullet_damage = bullet_damage
         self.player = player
         self.bullets = bullets
+        self.emitters = emitters
         self.reloudtimer = 0
         self.fire = False
 
@@ -96,9 +99,9 @@ class Enemy_turret(arcade.Sprite):
         if 360 > abs((angle_to_player - self.angle + 360) % 360) > 180:
             self.angle -= TURRETROTATIONSPEED * delta_time
         # Выравнивание пушки
-        Tx = Hx - (10) * SCALE * math.sin(
+        Tx = Hx - (11) * SCALE * math.sin(
             math.radians((self.angle) % 360))
-        Ty = Hy - (10) * SCALE * math.cos(
+        Ty = Hy - (11) * SCALE * math.cos(
             math.radians((self.angle) % 360))
 
         self.position = Tx, Ty
@@ -116,10 +119,11 @@ class Enemy_turret(arcade.Sprite):
                                self.bullet_speed_coef, self.bullet_damage,
                                self.bullets)
             self.bullets.append(newBullet)
+            self.emitters.append(make_smoke_puff(Bx, By, self.smoke_texture))
 
 
 class Enemy(arcade.SpriteList):
-    def __init__(self, x, y, enemy_id,  player, bullets):
+    def __init__(self, x, y, enemy_id,  player, bullets, emitters):
         super().__init__()
         self.player = player
         self.bullets = bullets
@@ -135,7 +139,7 @@ class Enemy(arcade.SpriteList):
         self.hull = Enemy_hull(self.hull_path, x, y, player, enemy_lives)
         self.turret = Enemy_turret(
             self.turret_path, self.bullet_path,
-            player, bullets, bullet_speed, bullet_damage)
+            player, bullets, bullet_speed, bullet_damage, emitters)
 
         self.append(self.hull)
         self.append(self.turret)
@@ -157,7 +161,7 @@ class Enemy(arcade.SpriteList):
 
 
 class Boss(arcade.SpriteList):
-    def __init__(self, x, y, player, bullets):
+    def __init__(self, x, y, player, bullets, emitters):
         super().__init__()
         self.player = player
         self.bullets = bullets
@@ -176,11 +180,11 @@ class Boss(arcade.SpriteList):
         self.hull = Enemy_hull(self.hull_path, x, y, player, lives)
         self.turret1 = Enemy_turret(
             self.turret_path1, self.bullet_path1,
-            player, bullets, bullet_speed1, bullet_damage1)
+            player, bullets, bullet_speed1, bullet_damage1, emitters)
         self.turret1.reloudtime = RELOUDTIME * 1.5
         self.turret2 = Enemy_turret(
             self.turret_path2, self.bullet_path2,
-            player, bullets, bullet_speed2, bullet_damage2)
+            player, bullets, bullet_speed2, bullet_damage2, emitters)
 
         self.append(self.hull)
         self.append(self.turret1)

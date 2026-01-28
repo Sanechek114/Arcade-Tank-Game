@@ -1,7 +1,8 @@
 import arcade
-from random import randint, choice
+from random import randint, choice, uniform
 from config import (SCALE, SCREEN_HEIGHT, SCREEN_WIDTH, RELOUDTIME,
                     CAMERA_LERP)
+from arcade.particles import Emitter, FadeParticle, EmitBurst
 from config import PLAYER_COORDS, ENEMY_COORDS_TYPE
 from tank import Player
 from explosion import Explosion
@@ -24,11 +25,11 @@ class GameView(arcade.View):
         self.map = map
         self.timer = 0
         self.stop = False
-        # карта
+        # загрузка карты
         self.tile_map = arcade.load_tilemap(
             f"assets/tank_map_{map}.tmx", SCALE, use_spatial_hash=True)
         self.scene = self.tile_map.sprite_lists['grass']  # Трава Песок
-        self.static = self.tile_map.sprite_lists['statics'] # Статичные Объекты
+        self.static = self.tile_map.sprite_lists['statics']  # Статичные Объекты
         self.trees = self.tile_map.sprite_lists['trees']  # Деревья
         self.breaking = self.tile_map.sprite_lists['breaking']  # Разрушаемые Объекты
         self.decorations = self.tile_map.sprite_lists['decorations']  # Грязь Ветки
@@ -37,6 +38,11 @@ class GameView(arcade.View):
         self.health_texture = arcade.load_texture("assets/health.png")
         self.reloud_texture = arcade.load_texture("assets/relouding.png")
 
+        self.sound = arcade.play_sound(arcade.load_sound('assets/sounds/kevin-macleod-8bit-dungeon-boss.mp3'), 0.5)
+
+        self.emitters = []
+
+        # стены сквозь которые не видят боты
         self.ai_walls = arcade.SpriteList(True)
         self.ai_walls.extend(self.static)
         self.ai_walls.extend(self.trees)
@@ -54,25 +60,26 @@ class GameView(arcade.View):
         self.fire = False
 
         self.game_over = False
-
+        # Стены для коллизиии
         self.walls = arcade.SpriteList(True)
         self.walls.extend(self.static)
         self.walls.extend(self.breaking)
         self.walls.extend(self.border)
+
         Px, Py = PLAYER_COORDS[map - 1]
 
         if map == 4:
             lives_multip = 2
         else:
             lives_multip = 1
-        self.player = Player(Px * 64 * SCALE, Py * 64 * SCALE, color, turret, lives_multip, self.bullets, self.walls)
+        self.player = Player(Px * 64 * SCALE, Py * 64 * SCALE, color, turret, lives_multip, self.bullets, self.walls, self.emitters)
 
         self.enemies = []
         for x, y, enemy_type in ENEMY_COORDS_TYPE[map - 1]:
             if enemy_type < 4:
-                enemy = Enemy(x * 64 * SCALE, y * 64 * SCALE, enemy_type, self.player.hull, self.bullets)
+                enemy = Enemy(x * 64 * SCALE, y * 64 * SCALE, enemy_type, self.player.hull, self.bullets, self.emitters)
             else:
-                enemy = Boss(x * 64 * SCALE, y * 64 * SCALE, self.player.hull, self.bullets)
+                enemy = Boss(x * 64 * SCALE, y * 64 * SCALE, self.player.hull, self.bullets, self.emitters)
             enemy.collision = arcade.PhysicsEngineSimple(
                 enemy.hull, self.walls)
             self.enemies.append(enemy)
@@ -102,6 +109,8 @@ class GameView(arcade.View):
         self.player.draw(pixelated=True)
         for enemy in self.enemies:
             enemy.draw(pixelated=True)
+        for emitter in self.emitters:
+            emitter.draw()
         self.trees.draw(pixelated=True)
         self.explosions.draw(pixelated=True)
         self.draw_reloding_lives()
@@ -147,7 +156,7 @@ class GameView(arcade.View):
 
         if len(colliding):
             self.player.hull.speed = 0  # Остоновка игрока при столкновениях
-        
+
         # Все проверки связаные с пулями
 
         self.bullets.update(delta_time)
@@ -186,9 +195,16 @@ class GameView(arcade.View):
             if any((broken, enemies_hulls and bullet.player, static)):
                 self.bullets.remove(bullet)
 
+        for emitter in self.emitters:
+            emitter.update()
+        for emitter in self.emitters:
+            if emitter.can_reap():
+                self.emitters.remove(emitter)
+
     # Отрисовка перезарядки и здоровья
     def draw_reloding_lives(self):
-        lives, max_lives, reloudtime, reloudtimer = self.player.get_lives_relouding()
+        lives, max_lives, reloudtime, reloudtimer =\
+            self.player.get_lives_relouding()
         dx = (reloudtime - reloudtimer) / reloudtime
         x, y = self.world_camera.position
         arcade.draw_lbwh_rectangle_filled(
@@ -205,17 +221,22 @@ class GameView(arcade.View):
         arcade.draw_lbwh_rectangle_filled(
                 x - self.width * 0.25, y - self.height * 0.43,
                 self.width * 0.5 * dx, SCALE * 10, arcade.color.RED)
-        arcade.draw_texture_rect(self.health_texture, arcade.rect.LRBT(x - self.width * 0.29, x - self.width * 0.26, y - self.height * 0.44, y - self.height * 0.40))
-        arcade.draw_texture_rect(self.reloud_texture, arcade.rect.LRBT(x - self.width * 0.29, x - self.width * 0.26, y - self.height * 0.48, y - self.height * 0.44))
+        arcade.draw_texture_rect(self.health_texture, arcade.rect.LRBT(
+            x - self.width * 0.29, x - self.width * 0.26, y - self.height * 0.44, y - self.height * 0.40))
+        arcade.draw_texture_rect(self.reloud_texture, arcade.rect.LRBT(
+            x - self.width * 0.29, x - self.width * 0.26, y - self.height * 0.48, y - self.height * 0.44))
 
     def open_game_over(self, event):
         if not self.stop:
             self.window.show_view(GameOverView(self, self.menu))
+            arcade.stop_sound(self.sound)
             self.stop = True
 
     def open_game_win(self, event):
         if not self.stop:
-            self.window.show_view(WinView(self, self.menu, self.color, self.map, self.timer))
+            self.window.show_view(WinView(self, self.menu, self.color,
+                                          self.map, self.timer))
+            arcade.stop_sound(self.sound)
             self.stop = True
 
     def world_camera_update(self):
@@ -241,6 +262,7 @@ class GameView(arcade.View):
         if key == arcade.key.ESCAPE:
             pause_view = PauseView(self, self.menu)
             self.window.show_view(pause_view)
+            arcade.stop_sound(self.sound)
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.W:
@@ -251,7 +273,7 @@ class GameView(arcade.View):
             self.left = False
         if key == arcade.key.D:
             self.right = False
-    
+
     def on_close(self):
         arcade.unschedule(self.open_game_over)
 

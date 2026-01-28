@@ -4,6 +4,7 @@ from config import (SCALE, SCREEN_WIDTH, SCREEN_HEIGHT, LIVES,
                     HULLROTATIONSPEED, TURRETROTATIONSPEED, RELOUDTIME)
 import math
 from bullet_class import Bullet
+from particles import make_smoke_puff
 
 
 # Класс корпуса
@@ -39,11 +40,13 @@ class Tank_hull(arcade.Sprite):
 
 # Класс Пушки
 class Tank_turret(arcade.Sprite):
-    def __init__(self, path, bullet_path, bullets, hull, reloudtime, turret_id):
+    def __init__(self, path, bullet_path, bullets, hull, reloudtime, turret_id, emitters):
         super().__init__(path, scale=SCALE)
         self.bullet_path = bullet_path
+        self.smoke_texture = arcade.make_soft_circle_texture(20 * SCALE, arcade.color.LIGHT_GRAY, 255, 80)
         self.shoot_sound = arcade.load_sound("assets/sounds/shoot.wav")
         self.bullets = bullets
+        self.emitters = emitters
         self.hull = hull
         # Урон от попадания, Множитель скорости
         bullet_modifers = {1: (1, 1),
@@ -83,16 +86,17 @@ class Tank_turret(arcade.Sprite):
             self.reloudtimer = self.reloudtime
             x, y = self.center_x, self.center_y
             angle = self.angle
-            Bx, By = (x + -SCALE * 10 * math.sin(math.radians(angle)),
-                      y + -SCALE * 10 * math.cos(math.radians(angle)))
+            Bx, By = (x + -SCALE * 15 * math.sin(math.radians(angle)),
+                      y + -SCALE * 15 * math.cos(math.radians(angle)))
             newBullet = Bullet(
                 self.bullet_path, Bx, By, angle - 180, self.bullet_speed,
                 self.bullet_damage, self.bullets, True)
             self.bullets.append(newBullet)
+            self.emitters.append(make_smoke_puff(Bx, By, self.smoke_texture))
 
 
 class Player(arcade.SpriteList):
-    def __init__(self, x, y, color, turret_id, lives_multip, bullets, walls):
+    def __init__(self, x, y, color, turret_id, lives_multip, bullets, walls, emitters):
         super().__init__()
         self.bullets = bullets
         self.walls = walls
@@ -118,7 +122,7 @@ class Player(arcade.SpriteList):
         self.bullet_path = f"assets/sprites/bullets/bullet{color.capitalize()}{turret_id}_outline.png"
 
         self.hull = Tank_hull(x, y, self.hull_path, max_speed)
-        self.turret = Tank_turret(self.turret_path, self.bullet_path, bullets, self.hull, reloudtime, turret_id)
+        self.turret = Tank_turret(self.turret_path, self.bullet_path, bullets, self.hull, reloudtime, turret_id, emitters)
         self.append(self.hull)
         self.append(self.turret)
 
