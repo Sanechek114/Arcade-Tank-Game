@@ -116,6 +116,8 @@ class GameView(arcade.View):
         self.draw_reloding_lives()
 
     def on_update(self, delta_time):
+        if delta_time > 1 / 15:
+            delta_time = 0
         self.timer += delta_time
         control = (self.forward, self.backward,
                    self.right, self.left, self.fire, self.mouseXY)
