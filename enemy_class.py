@@ -7,6 +7,41 @@ from particles import make_smoke_puff
 import math
 
 
+def has_line_of_sight(
+    observer,
+    target,
+    walls,
+    max_distance,
+    check_resolution=2,
+) -> bool:
+
+    if max_distance <= 0:
+        raise ValueError("max_distance must be greater than zero")
+    if check_resolution <= 0:
+        raise ValueError("check_resolution must be greater than zero")
+
+    distance = arcade.math.get_distance(observer[0], observer[1], target[0], target[1])
+    if distance == 0:
+        return True
+    dx = SCALE * 20 * (observer[0] - target[0]) / (distance)
+
+    dy = SCALE * 20 * (observer[1] - target[1]) / (distance)
+    
+    steps = int(distance // check_resolution)
+    for step in range(steps + 1):
+        step_distance = step * check_resolution
+        u = step_distance / distance
+        x, y = arcade.math.lerp_2d(observer, target, u)
+        if step_distance > max_distance:
+            return False
+        sprite_list1 = arcade.get_sprites_at_point((x, y), walls)
+        sprite_list2 = arcade.get_sprites_at_point((x + dy, y + dx), walls)
+        sprite_list3 = arcade.get_sprites_at_point((x - dy, y - dx), walls)
+        if len(sprite_list1) > 0 or len(sprite_list2) > 0 or len(sprite_list3) > 0:
+            return False
+    return True
+
+
 class Enemy_hull(arcade.Sprite):
     def __init__(self, path, x, y, player, lives):
         super().__init__(path, SCALE, x, y)
@@ -36,9 +71,13 @@ class Enemy_hull(arcade.Sprite):
         if self.timer == 0:
             self.player_point = self.position
         self.enemy_rotate(delta_time)
-        if abs(self.target_angle - self.angle) % 360 <= 60:
-            self.position = (self.center_x + self.change_x,
-                             self.center_y + self.change_y)
+        angle = abs((self.target_angle - self.angle + 360) % 360)
+        if 360 - angle < angle:
+            angle = 360 - angle
+
+        if angle <= 10:
+            self.position = (self.center_x + self.speed_x,
+                             self.center_y + self.speed_y)
 
     def enemy_rotate(self, delta_time):
         if not self.on_point:
@@ -47,12 +86,12 @@ class Enemy_hull(arcade.Sprite):
             if 360 > abs((self.target_angle - self.angle + 360) % 360) > 180:
                 self.angle -= HULLROTATIONSPEED / 1.5 * delta_time
 
-            self.change_x = self.speed * math.sin(
+            self.speed_x = self.speed * math.sin(
                 math.radians(self.angle + 180)) * delta_time
-            self.change_y = self.speed * math.cos(
+            self.speed_y = self.speed * math.cos(
                 math.radians(self.angle + 180)) * delta_time
         else:
-            self.change_x, self.change_y = 0, 0
+            self.speed_x, self.speed_y = 0, 0
 
 
 class Enemy_turret(arcade.Sprite):
@@ -145,7 +184,7 @@ class Enemy(arcade.SpriteList):
         self.append(self.turret)
 
     def update(self, delta_time, enemies, enemies_hulls, explosions, walls):
-        self.player_in_sight = arcade.has_line_of_sight(
+        self.player_in_sight = has_line_of_sight(
             self.player.position,
             self.hull.position,
             walls, ENEMY_VIEW,
@@ -191,11 +230,11 @@ class Boss(arcade.SpriteList):
         self.append(self.turret2)
 
     def update(self, delta_time, enemies, enemies_hulls, explosions, walls):
-        self.player_in_sight = arcade.has_line_of_sight(
+        self.player_in_sight = has_line_of_sight(
             self.player.position,
             self.hull.position,
             walls, ENEMY_VIEW * 3,
-            1)
+            10)
         self.hull.update(delta_time, self.player_in_sight)
         self.turret1.update(delta_time, self.hull,
                             self.player_in_sight)

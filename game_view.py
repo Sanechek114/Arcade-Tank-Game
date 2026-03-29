@@ -34,11 +34,18 @@ class GameView(arcade.View):
         self.breaking = self.tile_map.sprite_lists['breaking']  # Разрушаемые Объекты
         self.decorations = self.tile_map.sprite_lists['decorations']  # Грязь Ветки
         self.border = self.tile_map.sprite_lists['border']  # Статичные но проходят пули
-
+        
+        self.scene.enable_spatial_hashing()
+        self.static.enable_spatial_hashing()
+        self.trees.enable_spatial_hashing()
+        self.breaking.enable_spatial_hashing()
+        self.decorations.enable_spatial_hashing()
+        self.border.enable_spatial_hashing()
+        
         self.health_texture = arcade.load_texture("assets/health.png")
         self.reloud_texture = arcade.load_texture("assets/relouding.png")
 
-        self.sound = arcade.play_sound(arcade.load_sound('assets/sounds/kevin-macleod-8bit-dungeon-boss.mp3'), 0.5)
+        self.sound = arcade.play_sound(arcade.load_sound('assets/sounds/kevin-macleod-8bit-dungeon-boss.mp3'), 0.0)
 
         self.emitters = []
 
@@ -138,9 +145,9 @@ class GameView(arcade.View):
         for enemy in self.enemies:
             enemy.update(delta_time, self.enemies, self.enemies_hulls, self.explosions, self.ai_walls)
             enemy.collision.update()
-            trees += (arcade.check_for_collision_with_list(enemy.hull, self.trees))  # Проверка коллизия ботов и деревьев
+            trees += (arcade.check_for_collision_with_list(enemy.hull, self.trees, 1))  # Проверка коллизия ботов и деревьев
 
-        trees += (arcade.check_for_collision_with_list(self.player.hull, self.trees))  # Проверка коллизия игрока и деревьев
+        trees += (arcade.check_for_collision_with_list(self.player.hull, self.trees, 1))  # Проверка коллизия игрока и деревьев
 
         for tree in trees:
             x, y = tree.position
